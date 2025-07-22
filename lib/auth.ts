@@ -8,7 +8,21 @@ export const auth = betterAuth({
     provider: "pg",
     schema: schema,
   }),
-  emailAndPassword: { enabled: true },
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+  },
+  rateLimit: {
+    enabled: true,
+    max: 10,
+    window: 60,
+  },
+  advanced: {
+    ipAddress: {
+      ipAddressHeaders: ["x-real-ip", "x-forwarded-for", "cf-connecting-ip"], // bisa ditambah sesuai kebutuhan
+    },
+  },
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,

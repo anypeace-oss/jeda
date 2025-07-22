@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${fredoka.variable} antialiased`}>
+      <body className={`${fredoka.className} antialiased`}>
         <QueryProvider>
           {children}
           <Toaster richColors />

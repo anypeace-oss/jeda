@@ -22,6 +22,8 @@ export function PomodoroTimer() {
     toggleTimer,
     settings,
     incrementCompletedPomodoros,
+    loadUserSettings,
+    initializeTimeLeft,
   } = useTimerStore();
   const backgroundColor = useTimerBackground();
   const hasSentFocusTime = useRef(false);
@@ -33,6 +35,21 @@ export function PomodoroTimer() {
   const alarmRepeatCountRef = useRef<number>(0);
 
   const prevTimeLeft = useRef(timeLeft);
+
+  // Initialize timer state on mount
+  useEffect(() => {
+    // For non-logged in users, initialize from persisted state
+    if (!session?.user) {
+      initializeTimeLeft();
+    }
+  }, [session, initializeTimeLeft]);
+
+  // Load user settings when session changes
+  useEffect(() => {
+    if (session?.user) {
+      loadUserSettings();
+    }
+  }, [session, loadUserSettings]);
 
   // Get background color based on current mode
   const getBackgroundColor = () => {
@@ -376,17 +393,17 @@ export function PomodoroTimer() {
           <TabsList className="grid grid-cols-3 w-fit mx-auto    bg-transparent">
             <TabsTrigger
               value="pomodoro"
-              className="  border-0 font-fredoka   "
+              className="  border-0 font-fredoka   font-medium"
             >
               Pomodoros
             </TabsTrigger>
             <TabsTrigger
               value="shortBreak"
-              className=" border-0 font-fredoka  "
+              className=" border-0 font-fredoka  font-medium"
             >
               Short Break
             </TabsTrigger>
-            <TabsTrigger value="longBreak" className=" border-0  ">
+            <TabsTrigger value="longBreak" className=" border-0  font-medium">
               Long Break
             </TabsTrigger>
           </TabsList>

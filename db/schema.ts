@@ -26,8 +26,6 @@ export const stats = pgTable(
   },
   (table) => ({
     userIdDateIdx: uniqueIndex("user_id_date_idx").on(table.userId, table.date),
-    userIdIdx: uniqueIndex("user_id_idx").on(table.userId),
-    dateIdx: uniqueIndex("date_idx").on(table.date),
   })
 );
 

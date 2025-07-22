@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { useTimerStore } from "@/lib/store/timer";
+import { defaultSettings } from "@/lib/store/timer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -82,9 +83,9 @@ const BACKSOUND_OPTIONS = [
 ];
 
 export function SettingsDialog() {
+  const { settings: storedSettings, updateSettings } = useTimerStore();
   const [open, setOpen] = useState(false);
-  const { updateSettings } = useTimerStore();
-  const [form, setForm] = useState<SettingsData>(DEFAULT_SETTINGS);
+  const [form, setForm] = useState<SettingsData>(storedSettings);
   const [isDirty, setIsDirty] = useState(false);
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(
     null
@@ -96,7 +97,7 @@ export function SettingsDialog() {
 
   const { data: session } = authClient.useSession();
 
-  // Load settings from API when dialog opens
+  // Load settings from API when dialog opens for logged-in users
   useEffect(() => {
     const loadSettings = async () => {
       if (session?.user) {
@@ -110,26 +111,26 @@ export function SettingsDialog() {
           const data = await response.json();
           // Merge with defaults to ensure all fields exist
           const mergedSettings: SettingsData = {
-            ...DEFAULT_SETTINGS,
+            ...defaultSettings,
             ...data,
           };
           setForm(mergedSettings);
-          updateSettings(mergedSettings);
         } catch (error) {
           console.error("Error loading settings:", error);
           toast.error("Failed to load settings");
+          // On error, use stored settings
+          setForm(storedSettings);
         }
       } else {
-        // Use default settings for non-logged in users
-        setForm(DEFAULT_SETTINGS);
-        updateSettings(DEFAULT_SETTINGS);
+        // For non-logged in users, use stored settings
+        setForm(storedSettings);
       }
     };
 
     if (open) {
       loadSettings();
     }
-  }, [open, session, updateSettings]);
+  }, [open, session, storedSettings]);
 
   // Validation helpers
   const clamp = (val: string | number) => {
@@ -139,23 +140,18 @@ export function SettingsDialog() {
     if (n > 999) return 999;
     return n;
   };
+
   const isValid = (val: string | number) => {
     const n = Number(val);
     return val !== "" && !isNaN(n) && n >= 1 && n <= 999;
   };
-  const allValid = [
-    form.pomodoroTime,
-    form.shortBreakTime,
-    form.longBreakTime,
-    form.longBreakInterval,
-    form.alarmRepeat,
-  ].every(isValid);
 
   // Handlers
   const handleTimeChange = (field: keyof SettingsData, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value === "" ? "" : clamp(value) }));
     setIsDirty(true);
   };
+
   const handleTimeBlur = (field: keyof SettingsData) => {
     // Only validate number fields
     if (
@@ -173,10 +169,12 @@ export function SettingsDialog() {
       }));
     }
   };
+
   const handleSwitchChange = (field: keyof SettingsData, value: boolean) => {
     setForm((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
   };
+
   const handleOpenChange = async (newOpen: boolean) => {
     if (open && !newOpen && isDirty) {
       // Only save if closing and there are changes
@@ -220,7 +218,7 @@ export function SettingsDialog() {
           return;
         }
       } else {
-        // Just update local state for non-logged in users
+        // For non-logged in users, just update local storage
         updateSettings(form);
       }
     }
@@ -230,15 +228,18 @@ export function SettingsDialog() {
       setIsDirty(false); // Reset dirty state when closing
     }
   };
+
   // Color picker helpers
   const openColorPicker = (mode: "pomodoro" | "shortBreak" | "longBreak") => {
     setColorPickerMode(mode);
     setIsColorPickerOpen(true);
   };
+
   const closeColorPicker = () => {
     setIsColorPickerOpen(false);
     setColorPickerMode(null);
   };
+
   const handleColorPick = (color: string) => {
     if (!colorPickerMode) return;
 
@@ -249,14 +250,12 @@ export function SettingsDialog() {
 
     setForm(newSettings);
     setIsDirty(true);
-
-    // Update colors immediately in the store
-    updateSettings(newSettings);
     closeColorPicker();
   };
+
   // Reset all fields
   const handleReset = () => {
-    setForm({ ...DEFAULT_SETTINGS });
+    setForm(defaultSettings);
     setIsDirty(true);
   };
 
@@ -288,11 +287,8 @@ export function SettingsDialog() {
   // Volume change handler with preview
   const handleVolumeChange = (value: number) => {
     const newVolume = value / 100;
-    setForm((f) => ({ ...f, volume: newVolume }));
+    setForm((prev) => ({ ...prev, volume: newVolume }));
     setIsDirty(true);
-
-    // Update volume immediately in the store
-    updateSettings({ ...form, volume: newVolume });
 
     // Play a short preview sound when adjusting volume
     if (!previewAudio) {
@@ -321,7 +317,7 @@ export function SettingsDialog() {
     field: "alarmSound" | "backsound",
     value: string
   ) => {
-    setForm((f) => ({ ...f, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
     setIsDirty(true);
     previewSound(field === "alarmSound" ? "alarm" : "backsound", value);
   };
@@ -329,20 +325,20 @@ export function SettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" >
+        <Button variant="outline" size="icon">
           <Settings className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className=" p-6  w-xl md:w-md">
+      <DialogContent className="p-6 w-xl md:w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[450px]">
           <div className="space-y-6">
             {/* Color Theme Section */}
-            <div className="flex justify-between w-full  space-y-4">
+            <div className="flex justify-between w-full space-y-4">
               <h3 className="text-base font-semibold">Color Themes</h3>
-              <div className="flex  gap-4">
+              <div className="flex gap-4">
                 <button
                   className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
                   style={{ backgroundColor: form.pomodoroColor }}
@@ -367,7 +363,7 @@ export function SettingsDialog() {
             {/* Timer Settings Section */}
             <div className="space-y-4">
               <h3 className="text-base font-semibold">Timer</h3>
-              <div className="flex gap-4 justify-between w-full ">
+              <div className="flex gap-4 justify-between w-full">
                 <div className="space-y-2">
                   <Label htmlFor="pomodoro" className="text-sm">
                     Pomodoro
@@ -429,7 +425,6 @@ export function SettingsDialog() {
             </div>
 
             {/* Auto Start Section */}
-
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
@@ -448,7 +443,7 @@ export function SettingsDialog() {
                   }
                 />
               </div>
-              <div className="flex items-center justify-between ">
+              <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="autoStartPomodoros" className="text-sm">
                     Auto Start Pomodoros
@@ -466,8 +461,8 @@ export function SettingsDialog() {
                 />
               </div>
             </div>
-            <div className=" flex justify-between w-full ">
-              <Label htmlFor="longBreakInterval" className="text-sm ">
+            <div className="flex justify-between w-full">
+              <Label htmlFor="longBreakInterval" className="text-sm">
                 Long Break Interval (Pomodoros)
               </Label>
               <div className="flex items-center gap-2">

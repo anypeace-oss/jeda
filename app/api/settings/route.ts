@@ -41,13 +41,13 @@ export async function GET() {
     }
 
     // Remove date fields from the response
-    const { createdAt, updatedAt, ...settingsWithoutDates } = userSettings;
+    const { ...settingsWithoutDates } = userSettings;
     return NextResponse.json(settingsWithoutDates);
   } catch (error) {
     console.error("[SETTINGS_GET_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to fetch settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,13 +118,13 @@ export async function POST(request: Request) {
     }
 
     // Remove date fields from the response
-    const { createdAt, updatedAt, ...settingsWithoutDates } = result[0];
+    const { ...settingsWithoutDates } = result[0];
     return NextResponse.json(settingsWithoutDates);
   } catch (error) {
     console.error("[SETTINGS_UPDATE_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to update settings" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

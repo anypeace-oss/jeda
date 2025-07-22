@@ -5,12 +5,11 @@ import { authClient } from "@/lib/auth-client";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link";
-
+import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 export default function SignInPage() {
   const [githubLoading, setGithubLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-
+  const backgroundColor = useTimerBackground();
   const handleGitHubSignIn = async () => {
     setGithubLoading(true);
     await authClient.signIn
@@ -36,17 +35,18 @@ export default function SignInPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center relative dark"
-      style={{ backgroundColor: "oklch(0.5425 0.1342 23.73)" }}
+      style={{ backgroundColor }}
     >
       <div className="max-w-sm w-full space-y-8">
-        <Link href="/" className="flex items-center justify-center">
-          <Image src="/icon.svg" alt="Jeda" width={80} height={80} />
-        </Link>
         <div>
-          <h2 className="mt-6 text-center text-xl font-serif dark:text-foreground">
-            Welcome to Jeda
+          <h2 className="mt-6 text-center text-4xl font-medium dark:text-foreground flex items-center justify-center gap-2">
+            Welcome{" "}
+            <span className="flex items-center justify-center">
+              t<Image src="/icon.svg" alt="Jeda" width={40} height={40} />
+            </span>{" "}
+            Jeda!
           </h2>
-          <p className="text-center text-xs dark:text-foreground">
+          <p className="text-center text-xs font-medium dark:text-foreground">
             New here or coming back? Choose how you want to continue
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function SignInPage() {
           </Button>
         </div>
 
-        <p className="text-[10px] text-center  absolute bottom-10 left-0 right-0 font-mono dark:text-foreground">
+        <p className="text-xs  text-center  absolute bottom-10 left-0 right-0 font-mono dark:text-foreground">
           By signing in you agree to our{" "}
           <a href="/terms" className="underline">
             Terms of service

@@ -14,6 +14,8 @@ export interface TimerState {
   toggleTimer: () => void;
   updateSettings: (settings: Settings) => void;
   incrementCompletedPomodoros: () => void;
+  loadUserSettings: () => Promise<void>;
+  initializeTimeLeft: () => void;
 }
 
 export type Settings = {
@@ -32,7 +34,7 @@ export type Settings = {
   alarmRepeat: number;
 };
 
-const defaultSettings: Settings = {
+export const defaultSettings: Settings = {
   pomodoroTime: 25,
   shortBreakTime: 5,
   longBreakTime: 15,
@@ -72,8 +74,6 @@ export const useTimerStore = create<TimerState>()(
       },
       updateSettings: (newSettings) => {
         set((state) => {
-          const updatedSettings = { ...state.settings, ...newSettings };
-
           // Only update timeLeft if timer duration settings changed AND timer is not running
           if (!state.isRunning) {
             const timeSettingsChanged =
@@ -85,28 +85,70 @@ export const useTimerStore = create<TimerState>()(
             if (timeSettingsChanged) {
               const newTimeLeft =
                 state.mode === "pomodoro"
-                  ? updatedSettings.pomodoroTime * 60
+                  ? newSettings.pomodoroTime * 60
                   : state.mode === "shortBreak"
-                  ? updatedSettings.shortBreakTime * 60
-                  : updatedSettings.longBreakTime * 60;
+                  ? newSettings.shortBreakTime * 60
+                  : newSettings.longBreakTime * 60;
 
               return {
-                settings: updatedSettings,
+                settings: newSettings,
                 timeLeft: newTimeLeft,
               };
             }
           }
 
           // If timer is running or no time settings changed, just update settings
-          return { settings: updatedSettings };
+          return { settings: newSettings };
         });
       },
       incrementCompletedPomodoros: () => {
         set((state) => ({ completedPomodoros: state.completedPomodoros + 1 }));
       },
+      loadUserSettings: async () => {
+        try {
+          const response = await fetch("/api/settings", {
+            credentials: "include",
+          });
+          if (!response.ok) {
+            throw new Error("Failed to load settings");
+          }
+          const data = await response.json();
+          // Merge with defaults to ensure all fields exist
+          const mergedSettings = {
+            ...defaultSettings,
+            ...data,
+          };
+          // Update settings and recalculate timeLeft if needed
+          get().updateSettings(mergedSettings);
+        } catch (error) {
+          console.error("Error loading user settings:", error);
+        }
+      },
+      initializeTimeLeft: () => {
+        const state = get();
+        const settings = state.settings;
+        const newTimeLeft =
+          state.mode === "pomodoro"
+            ? settings.pomodoroTime * 60
+            : state.mode === "shortBreak"
+            ? settings.shortBreakTime * 60
+            : settings.longBreakTime * 60;
+        set({ timeLeft: newTimeLeft });
+      },
     }),
     {
       name: "timer-storage",
+      partialize: (state) => ({
+        settings: state.settings,
+        completedPomodoros: state.completedPomodoros,
+        mode: state.mode,
+      }),
+      onRehydrateStorage: () => (state) => {
+        // When state is rehydrated from storage, initialize timeLeft based on mode and settings
+        if (state) {
+          state.initializeTimeLeft();
+        }
+      },
     }
   )
 );

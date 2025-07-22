@@ -2,12 +2,11 @@
 import { Button } from "@/components/ui/button";
 import {
   Keyboard,
-  LayoutDashboard,
   Loader,
   LogIn,
   LogOut,
   MoreVertical,
-  Package,
+  Trash,
   User,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,19 +15,52 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { KeyboardShortcuts } from "../feature/keyboard-shortcuts";
 import { useState } from "react";
+import { toast } from "sonner";
+
+const DELETE_CONFIRMATION_TEXT = "DELETE";
 
 export function UserButton() {
   const { data: session, isPending } = authClient.useSession();
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Handle account deletion
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation !== DELETE_CONFIRMATION_TEXT) {
+      toast.error("Please type the confirmation text exactly as shown");
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await authClient.deleteUser();
+      setShowDeleteDialog(false);
+      toast.success("Your account has been deleted");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to delete account. Please try again.");
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmation("");
+    }
+  };
 
   // Show loading spinner while checking auth status
   if (isPending) {
@@ -84,6 +116,55 @@ export function UserButton() {
         open={showKeyboardShortcuts}
         onOpenChange={setShowKeyboardShortcuts}
       />
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Account</DialogTitle>
+            <DialogDescription className="pt-4">
+              This action cannot be undone. This will permanently delete your
+              account and remove all your data from our servers.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+              placeholder="Type 'DELETE' to confirm"
+              className="font-mono"
+              autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setDeleteConfirmation("");
+              }}
+              className="border"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteAccount}
+              disabled={
+                deleteConfirmation !== DELETE_CONFIRMATION_TEXT || isDeleting
+              }
+            >
+              {isDeleting ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                "Delete Account"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger
           asChild
@@ -117,14 +198,13 @@ export function UserButton() {
             Shortcuts
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            onClick={() => authClient.signOut()}
-            className="text-destructive"
-          >
+          <DropdownMenuItem onClick={() => authClient.signOut()}>
             <LogOut className="w-4 h-4 mr-2" />
-            Keluar
+            Logout
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
+            <Trash className="w-4 h-4 mr-2" />
+            Delete Account
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

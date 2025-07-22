@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { stats } from "@/db/schema";
 import { startOfDay } from "date-fns";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { z } from "zod";
 import { headers } from "next/headers";
 
@@ -12,6 +12,14 @@ import { headers } from "next/headers";
 const trackStatsSchema = z.object({
   focusTime: z.number().min(0),
 });
+
+// Type for PostgreSQL error
+interface PostgresError extends Error {
+  code: string;
+  detail?: string;
+  table?: string;
+  constraint?: string;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,35 +50,59 @@ export async function POST(request: NextRequest) {
     // Get current date (UTC midnight)
     const today = startOfDay(new Date());
 
-    // Try to find existing stats for today
-    const existingStats = await db.query.stats.findFirst({
-      where: and(eq(stats.userId, session.user.id), eq(stats.date, today)),
-    });
+    try {
+      // Try to find existing stats for today
+      const existingStats = await db.query.stats.findFirst({
+        where: and(eq(stats.userId, session.user.id), eq(stats.date, today)),
+      });
 
-    let updatedStats;
-    if (existingStats) {
-      // Update if exists
-      updatedStats = await db
-        .update(stats)
-        .set({
-          focusTime: existingStats.focusTime + focusTime,
-          updatedAt: new Date(),
-        })
-        .where(and(eq(stats.userId, session.user.id), eq(stats.date, today)))
-        .returning();
-    } else {
-      // Create if doesn't exist
-      updatedStats = await db
-        .insert(stats)
-        .values({
-          userId: session.user.id,
-          date: today,
-          focusTime,
-        })
-        .returning();
+      let updatedStats;
+      if (existingStats) {
+        // Update if exists
+        updatedStats = await db
+          .update(stats)
+          .set({
+            focusTime: existingStats.focusTime + focusTime,
+            updatedAt: new Date(),
+          })
+          .where(and(eq(stats.userId, session.user.id), eq(stats.date, today)))
+          .returning();
+      } else {
+        // Create if doesn't exist
+        updatedStats = await db
+          .insert(stats)
+          .values({
+            userId: session.user.id,
+            date: today,
+            focusTime,
+          })
+          .returning();
+      }
+
+      return NextResponse.json(updatedStats[0]);
+    } catch (dbError) {
+      // Handle potential race condition where another request created the record
+      // between our check and insert
+      const pgError = dbError as PostgresError;
+      if (
+        pgError.code === "23505" &&
+        pgError.constraint === "user_id_date_idx"
+      ) {
+        // Retry the update
+        const updatedStats = await db
+          .update(stats)
+          .set({
+            focusTime: sql`focus_time + ${focusTime}`,
+            updatedAt: new Date(),
+          })
+          .where(and(eq(stats.userId, session.user.id), eq(stats.date, today)))
+          .returning();
+
+        return NextResponse.json(updatedStats[0]);
+      }
+
+      throw dbError;
     }
-
-    return NextResponse.json(updatedStats[0]);
   } catch (error) {
     console.error("[TRACK_STATS_ERROR]", error);
     return NextResponse.json(

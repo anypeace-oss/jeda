@@ -11,7 +11,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
@@ -26,6 +25,7 @@ import {
 } from "@/components/ui/pagination";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -201,12 +201,22 @@ export function StatsDialog() {
               ) : summary ? (
                 <>
                   <div className="flex items-center gap-4 mb-6">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage src={summary.avatarUrl ?? undefined} />
-                      <AvatarFallback>
-                        {summary.username?.[0]?.toUpperCase() ?? "?"}
-                      </AvatarFallback>
-                    </Avatar>
+                    {summary.avatarUrl ? (
+                      <Image
+                        src={summary.avatarUrl ?? ""}
+                        alt={summary.username}
+                        width={48}
+                        height={48}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <Avatar className="h-12 w-12">
+                        <AvatarFallback>
+                          {summary.username?.[0]?.toUpperCase() ?? "?"}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+
                     <div>
                       <h3 className="font-medium">{summary.username}</h3>
                       <p className="text-sm text-muted-foreground">
@@ -272,13 +282,21 @@ export function StatsDialog() {
                             #{(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
                           </span>
 
-                          <Image
-                            src={user.avatarUrl ?? ""}
-                            alt={user.username}
-                            width={40}
-                            height={40}
-                            className="rounded-full"
-                          />
+                          {user.avatarUrl ? (
+                            <Image
+                              src={user.avatarUrl ?? ""}
+                              alt={user.username}
+                              width={40}
+                              height={40}
+                              className="rounded-full"
+                            />
+                          ) : (
+                            <Avatar className="h-10 w-10">
+                              <AvatarFallback>
+                                {user.username?.[0]?.toUpperCase() ?? "?"}
+                              </AvatarFallback>
+                            </Avatar>
+                          )}
                           <div className="flex-grow">
                             <h4 className="font-medium">{user.username}</h4>
                             <p className="text-sm text-muted-foreground">
