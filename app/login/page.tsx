@@ -4,6 +4,8 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function SignInPage() {
   const [githubLoading, setGithubLoading] = useState(false);
@@ -32,17 +34,26 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative">
-      <div className="max-w-sm w-full space-y-8 p-8">
+    <div
+      className="min-h-screen flex items-center justify-center relative dark"
+      style={{ backgroundColor: "oklch(0.5425 0.1342 23.73)" }}
+    >
+      <div className="max-w-md w-full space-y-8 p-8">
+        <Link href="/" className="flex items-center justify-center">
+          <Image src="/icon.svg" alt="Jeda" width={80} height={80} />
+        </Link>
         <div>
-          <h2 className="mt-6 text-center text-2xl  font-bold ">
+          <h2 className="mt-6 text-center text-xl  dark:text-foreground">
             Welcome to Jeda
           </h2>
+          <p className="text-center text-xs dark:text-foreground">
+            New here or coming back? Choose how you want to continue
+          </p>
         </div>
 
         <div className="space-y-4">
           <Button
-            variant="outline"
+            variant="default"
             onClick={handleGoogleSignIn}
             className="w-full"
             disabled={githubLoading || googleLoading}
@@ -52,7 +63,11 @@ export default function SignInPage() {
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <svg viewBox="0 0 128 128" className="w-4 h-4">
+                  <svg
+                    viewBox="0 0 128 128"
+                    className="w-4 h-4"
+                    fill="currentColor"
+                  >
                     <path
                       fill="#fff"
                       d="M44.59 4.21a63.28 63.28 0 004.33 120.9 67.6 67.6 0 0032.36.35 57.13 57.13 0 0025.9-13.46 57.44 57.44 0 0016-26.26 74.33 74.33 0 001.61-33.58H65.27v24.69h34.47a29.72 29.72 0 01-12.66 19.52 36.16 36.16 0 01-13.93 5.5 41.29 41.29 0 01-15.1 0A37.16 37.16 0 0144 95.74a39.3 39.3 0 01-14.5-19.42 38.31 38.31 0 010-24.63 39.25 39.25 0 019.18-14.91A37.17 37.17 0 0176.13 27a34.28 34.28 0 0113.64 8q5.83-5.8 11.64-11.63c2-2.09 4.18-4.08 6.15-6.22A61.22 61.22 0 0087.2 4.59a64 64 0 00-42.61-.38z"
@@ -81,7 +96,7 @@ export default function SignInPage() {
           </Button>
 
           <Button
-            variant="outline"
+            variant="default"
             onClick={handleGitHubSignIn}
             className="w-full"
             disabled={githubLoading || googleLoading}
@@ -91,8 +106,12 @@ export default function SignInPage() {
             ) : (
               <>
                 <div className="flex items-center gap-2">
-                  <svg viewBox="0 0 128 128" className="w-4 h-4">
-                    <g fill="#181616">
+                  <svg
+                    viewBox="0 0 128 128"
+                    className="w-4 h-4"
+                    fill="currentColor"
+                  >
+                    <g fill="currentColor">
                       <path
                         fillRule="evenodd"
                         clipRule="evenodd"
@@ -108,7 +127,7 @@ export default function SignInPage() {
           </Button>
         </div>
 
-        <p className="text-[10px] text-center  absolute bottom-10 left-0 right-0 font-mono">
+        <p className="text-[10px] text-center  absolute bottom-10 left-0 right-0 font-mono dark:text-foreground">
           By signing in you agree to our{" "}
           <a href="/terms" className="underline">
             Terms of service
