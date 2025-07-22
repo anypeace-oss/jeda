@@ -16,14 +16,17 @@ const SHORTCUTS = [
   { key: "3", action: "Switch to Long Break" },
 ];
 
-export function KeyboardShortcuts() {
+type KeyboardShortcutsProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
+export function KeyboardShortcuts({
+  open,
+  onOpenChange,
+}: KeyboardShortcutsProps) {
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Keyboard className="h-5 w-5" />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">

@@ -2,17 +2,14 @@
 import { SettingsDialog } from "@/components/feature/settings-dialog";
 import { StatsDialog } from "@/components/feature/stats-dialog";
 import { ProgressTimer } from "@/components/feature/progres-timer";
-import { KeyboardShortcuts } from "@/components/feature/keyboard-shortcuts";
 
-import { Button } from "../ui/button";
 import Link from "next/link";
 import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 import Image from "next/image";
-import { authClient } from "@/lib/auth-client";
+import { UserButton } from "./user-button";
 
 export default function Header() {
   const backgroundColor = useTimerBackground();
-  const { data: session } = authClient.useSession();
 
   return (
     <nav style={{ backgroundColor }}>
@@ -26,17 +23,9 @@ export default function Header() {
           </Link>
           <div className="flex items-center gap-2">
             <SettingsDialog />
-            <KeyboardShortcuts />
+
             <StatsDialog />
-            {session ? (
-              <Button variant="outline" onClick={() => authClient.signOut()}>
-                Logout
-              </Button>
-            ) : (
-              <Button variant="outline" asChild>
-                <Link href="/login">Login</Link>
-              </Button>
-            )}
+            <UserButton />
           </div>
         </div>
         <ProgressTimer />
