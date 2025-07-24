@@ -17,6 +17,11 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 import Link from "next/link";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 export default function SignInPage() {
   const [githubLoading, setGithubLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -145,33 +150,42 @@ export default function SignInPage() {
             <div className="flex-grow border-t border-gray-300" />
           </div>
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="w-full font-normal">
-                Nah, I&apos;m good 😎 (Continue as ghost)
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Ghost mode 👻</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Your data will only live in your browser. If you close it,
-                  poof — it&apos;s gone 🫥
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel className="bg-muted text-foreground hover:bg-muted/80">
-                  Hmm... maybe I *will* log in
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  className="bg-red-500 text-white hover:bg-red-600"
-                  asChild
-                >
-                  <Link href="/">YEAH, I&apos;m good 😎</Link>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Tooltip delayDuration={0}>
+            <TooltipTrigger className="w-full ">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="w-full font-normal">
+                    Continue as ghost 🫥👻
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Ghost mode 👻</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Your data will only live in your browser. If you close it,
+                      poof — it&apos;s gone 🫥
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className="bg-muted text-foreground hover:bg-muted/80">
+                      Hmm... maybe I *will* log in
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-500 text-white hover:bg-red-600"
+                      asChild
+                    >
+                      <Link href="/">YEAH, I&apos;m good 😎</Link>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>
+                Nothing will be saved. You’re just a shadow in the wind 🌬️
+              </p>
+            </TooltipContent>
+          </Tooltip>
 
           <p className="text-xs mt-3 text-center text-white/70 font-mono italic">
             Logging in unlocks streaks, progress sync, and secret productivity

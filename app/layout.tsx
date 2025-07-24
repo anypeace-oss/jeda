@@ -3,6 +3,7 @@ import { Fredoka } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/providers";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka",
@@ -29,7 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${fredoka.className} antialiased`}>
         <QueryProvider>
-          {children}
+          <TooltipProvider>{children}</TooltipProvider>
           <Toaster richColors />
         </QueryProvider>
       </body>
