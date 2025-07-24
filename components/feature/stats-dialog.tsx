@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { BarChart } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -195,15 +196,22 @@ export function StatsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <BarChart className="h-5 w-5" />
-        </Button>
+      <DialogTrigger>
+        <Tooltip>
+          <TooltipTrigger>
+            <Button variant="outline" size="icon">
+              <BarChart className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Report [R]</p>
+          </TooltipContent>
+        </Tooltip>
       </DialogTrigger>
-      <DialogContent className="">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold mb-4">
-            Statistics
+            Report
           </DialogTitle>
         </DialogHeader>
 

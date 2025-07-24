@@ -15,6 +15,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -32,6 +33,8 @@ import { KeyboardShortcuts } from "../feature/keyboard-shortcuts";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
+
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const DELETE_CONFIRMATION_TEXT = "DELETE";
 
@@ -85,10 +88,17 @@ export function UserButton() {
             <Link href={"/login"}>Sign In</Link>
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={"outline"} size="icon">
-                <MoreVertical className="w-5 h-5" />
-              </Button>
+            <DropdownMenuTrigger>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button variant={"outline"} size="icon">
+                    <MoreVertical className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>More</p>
+                </TooltipContent>
+              </Tooltip>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 text-xs p-1">
               <DropdownMenuItem asChild>
@@ -100,6 +110,9 @@ export function UserButton() {
               <DropdownMenuItem onClick={() => setShowKeyboardShortcuts(true)}>
                 <Keyboard className="w-4 h-4 mr-2" />
                 Shortcuts
+                <span className="text-[10px] border border-muted-foreground rounded-md py-1 px-2">
+                  K
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -108,7 +121,6 @@ export function UserButton() {
     );
   }
 
-  // Show user menu if authenticated
   return (
     <>
       <KeyboardShortcuts
@@ -184,17 +196,21 @@ export function UserButton() {
           <DropdownMenuLabel className="flex flex-col gap-1 py-2">
             <div className="flex items-center gap-2">
               <User className="w-4 h-4" />
-              <span className="font-medium truncate">
+              <span className="font-semibold">
                 {session?.user?.name || "Loading..."}
               </span>
             </div>
-            <span className="text-muted-foreground truncate pl-6">
+            <span className="text-foreground/80 pl-6 font-light">
               {session?.user?.email || "Loading..."}
             </span>
           </DropdownMenuLabel>
+          <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setShowKeyboardShortcuts(true)}>
             <Keyboard className="w-4 h-4 mr-2" />
-            Shortcuts
+            Shortcuts{" "}
+            <span className="text-[10px] border/80 border rounded-md py-1 px-2">
+              K
+            </span>
           </DropdownMenuItem>
 
           <DropdownMenuItem onClick={() => authClient.signOut()}>

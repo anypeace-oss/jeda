@@ -25,6 +25,7 @@ import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "../ui/scroll-area";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const COLOR_OPTIONS = [
   { name: "Brick Red", value: "oklch(0.5425 0.1342 23.73)" },
@@ -332,10 +333,17 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Settings className="h-5 w-5" />
-        </Button>
+      <DialogTrigger >
+        <Tooltip>
+          <TooltipTrigger>
+            <Button variant="outline">
+              <Settings className="h-5 w-5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Settings [S]</p>
+          </TooltipContent>
+        </Tooltip>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
