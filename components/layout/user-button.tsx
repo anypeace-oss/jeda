@@ -31,6 +31,7 @@ import Image from "next/image";
 import { KeyboardShortcuts } from "../feature/keyboard-shortcuts";
 import { useState } from "react";
 import { toast } from "sonner";
+import { Skeleton } from "../ui/skeleton";
 
 const DELETE_CONFIRMATION_TEXT = "DELETE";
 
@@ -65,10 +66,8 @@ export function UserButton() {
   // Show loading spinner while checking auth status
   if (isPending) {
     return (
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" disabled>
-          <Loader className="h-5 w-5 animate-spin" />
-        </Button>
+      <div className="flex items-center ">
+        <Skeleton className="w-9 h-9 border-2 border-white/50 bg-foreground/10" />
       </div>
     );
   }

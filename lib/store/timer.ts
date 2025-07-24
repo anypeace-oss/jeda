@@ -16,6 +16,7 @@ export interface TimerState {
   incrementCompletedPomodoros: () => void;
   loadUserSettings: () => Promise<void>;
   initializeTimeLeft: () => void;
+  setTimeLeft: (time: number) => void;
 }
 
 export type Settings = {
@@ -74,30 +75,23 @@ export const useTimerStore = create<TimerState>()(
       },
       updateSettings: (newSettings) => {
         set((state) => {
-          // Only update timeLeft if timer duration settings changed AND timer is not running
+          // Calculate new time left based on current mode and new settings
+          const newTimeLeft =
+            state.mode === "pomodoro"
+              ? newSettings.pomodoroTime * 60
+              : state.mode === "shortBreak"
+              ? newSettings.shortBreakTime * 60
+              : newSettings.longBreakTime * 60;
+
+          // Always update settings and timeLeft unless timer is running
           if (!state.isRunning) {
-            const timeSettingsChanged =
-              ("pomodoroTime" in newSettings && state.mode === "pomodoro") ||
-              ("shortBreakTime" in newSettings &&
-                state.mode === "shortBreak") ||
-              ("longBreakTime" in newSettings && state.mode === "longBreak");
-
-            if (timeSettingsChanged) {
-              const newTimeLeft =
-                state.mode === "pomodoro"
-                  ? newSettings.pomodoroTime * 60
-                  : state.mode === "shortBreak"
-                  ? newSettings.shortBreakTime * 60
-                  : newSettings.longBreakTime * 60;
-
-              return {
-                settings: newSettings,
-                timeLeft: newTimeLeft,
-              };
-            }
+            return {
+              settings: newSettings,
+              timeLeft: newTimeLeft,
+            };
           }
 
-          // If timer is running or no time settings changed, just update settings
+          // If timer is running, only update settings
           return { settings: newSettings };
         });
       },
@@ -105,35 +99,49 @@ export const useTimerStore = create<TimerState>()(
         set((state) => ({ completedPomodoros: state.completedPomodoros + 1 }));
       },
       loadUserSettings: async () => {
-        try {
-          const response = await fetch("/api/settings", {
-            credentials: "include",
-          });
-          if (!response.ok) {
-            throw new Error("Failed to load settings");
+        // Only fetch if we're still using default settings
+        const currentSettings = get().settings;
+        const isUsingDefaults = Object.entries(currentSettings).every(
+          ([key, value]) => defaultSettings[key as keyof Settings] === value
+        );
+
+        if (isUsingDefaults) {
+          try {
+            const response = await fetch("/api/settings", {
+              credentials: "include",
+            });
+            if (!response.ok) {
+              throw new Error("Failed to load settings");
+            }
+            const data = await response.json();
+            // Merge with defaults to ensure all fields exist
+            const mergedSettings = {
+              ...defaultSettings,
+              ...data,
+            };
+            // Update settings and recalculate timeLeft if needed
+            get().updateSettings(mergedSettings);
+          } catch (error) {
+            console.error("Error loading user settings:", error);
           }
-          const data = await response.json();
-          // Merge with defaults to ensure all fields exist
-          const mergedSettings = {
-            ...defaultSettings,
-            ...data,
-          };
-          // Update settings and recalculate timeLeft if needed
-          get().updateSettings(mergedSettings);
-        } catch (error) {
-          console.error("Error loading user settings:", error);
         }
       },
       initializeTimeLeft: () => {
         const state = get();
-        const settings = state.settings;
-        const newTimeLeft =
-          state.mode === "pomodoro"
-            ? settings.pomodoroTime * 60
-            : state.mode === "shortBreak"
-            ? settings.shortBreakTime * 60
-            : settings.longBreakTime * 60;
-        set({ timeLeft: newTimeLeft });
+        // Only initialize if timeLeft is 0 or undefined
+        if (!state.timeLeft) {
+          const settings = state.settings;
+          const newTimeLeft =
+            state.mode === "pomodoro"
+              ? settings.pomodoroTime * 60
+              : state.mode === "shortBreak"
+              ? settings.shortBreakTime * 60
+              : settings.longBreakTime * 60;
+          set({ timeLeft: newTimeLeft });
+        }
+      },
+      setTimeLeft: (time: number) => {
+        set({ timeLeft: time });
       },
     }),
     {
@@ -142,11 +150,15 @@ export const useTimerStore = create<TimerState>()(
         settings: state.settings,
         completedPomodoros: state.completedPomodoros,
         mode: state.mode,
+        timeLeft: state.timeLeft,
+        isRunning: state.isRunning, // Preserve the actual running state
       }),
       onRehydrateStorage: () => (state) => {
-        // When state is rehydrated from storage, initialize timeLeft based on mode and settings
+        // When state is rehydrated from storage, ensure timeLeft is valid
         if (state) {
-          state.initializeTimeLeft();
+          if (!state.timeLeft) {
+            state.initializeTimeLeft();
+          }
         }
       },
     }

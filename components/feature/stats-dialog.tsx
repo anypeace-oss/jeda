@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BarChart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -126,6 +126,32 @@ export function StatsDialog() {
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const { data: session } = authClient.useSession();
+
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Ignore if any modifier key is pressed
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+        return;
+      }
+
+      if (e.key.toLowerCase() === "r") {
+        e.preventDefault();
+        setOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
 
   // Use React Query for data fetching with caching
   const {

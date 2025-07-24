@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
           .update(stats)
           .set({
             focusTime: existingStats.focusTime + focusTime,
-            updatedAt: new Date(),
+        updatedAt: new Date(),
           })
           .where(and(eq(stats.userId, session.user.id), eq(stats.date, today)))
           .returning();
@@ -72,9 +72,9 @@ export async function POST(request: NextRequest) {
         updatedStats = await db
           .insert(stats)
           .values({
-            userId: session.user.id,
-            date: today,
-            focusTime,
+        userId: session.user.id,
+        date: today,
+        focusTime,
           })
           .returning();
       }

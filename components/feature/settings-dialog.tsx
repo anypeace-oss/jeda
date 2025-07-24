@@ -97,40 +97,42 @@ export function SettingsDialog() {
 
   const { data: session } = authClient.useSession();
 
-  // Load settings from API when dialog opens for logged-in users
+  // Add keyboard shortcut handler
   useEffect(() => {
-    const loadSettings = async () => {
-      if (session?.user) {
-        try {
-          const response = await fetch("/api/settings", {
-            credentials: "include",
-          });
-          if (!response.ok) {
-            throw new Error("Failed to load settings");
-          }
-          const data = await response.json();
-          // Merge with defaults to ensure all fields exist
-          const mergedSettings: SettingsData = {
-            ...defaultSettings,
-            ...data,
-          };
-          setForm(mergedSettings);
-        } catch (error) {
-          console.error("Error loading settings:", error);
-          toast.error("Failed to load settings");
-          // On error, use stored settings
-          setForm(storedSettings);
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Ignore if any modifier key is pressed
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+        return;
+      }
+
+      if (e.key.toLowerCase() === "s") {
+        if (open) {
+          setOpen(false);
+        } else {
+          setOpen(true);
         }
-      } else {
-        // For non-logged in users, use stored settings
-        setForm(storedSettings);
       }
     };
 
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [open, setOpen]);
+
+  // Load settings when dialog opens
+  useEffect(() => {
     if (open) {
-      loadSettings();
+      // Always use stored settings first for immediate display
+      setForm(storedSettings);
     }
-  }, [open, session, storedSettings]);
+  }, [open, storedSettings]);
 
   // Validation helpers
   const clamp = (val: string | number) => {
@@ -175,57 +177,63 @@ export function SettingsDialog() {
     setIsDirty(true);
   };
 
-  const handleOpenChange = async (newOpen: boolean) => {
-    if (open && !newOpen && isDirty) {
-      // Only save if closing and there are changes
-      if (session?.user) {
-        try {
-          // Only send the fields we want to save
-          const settingsToSave = {
-            pomodoroTime: form.pomodoroTime,
-            shortBreakTime: form.shortBreakTime,
-            longBreakTime: form.longBreakTime,
-            autoStartBreaks: form.autoStartBreaks,
-            autoStartPomodoros: form.autoStartPomodoros,
-            longBreakInterval: form.longBreakInterval,
-            pomodoroColor: form.pomodoroColor,
-            shortBreakColor: form.shortBreakColor,
-            longBreakColor: form.longBreakColor,
-            volume: form.volume,
-            alarmSound: form.alarmSound,
-            backsound: form.backsound,
-            alarmRepeat: form.alarmRepeat,
-          };
+  const saveSettings = async (settingsToSave: SettingsData) => {
+    try {
+      const response = await fetch("/api/settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(settingsToSave),
+        credentials: "include",
+      });
 
-          const response = await fetch("/api/settings", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(settingsToSave),
-            credentials: "include",
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to save settings");
-          }
-
-          // Update local state only after successful save
-          updateSettings(form);
-          toast.success("Settings saved successfully");
-        } catch (error) {
-          console.error("Error saving settings:", error);
-          toast.error("Failed to save settings");
-          // Don't close dialog on error
-          return;
-        }
-      } else {
-        // For non-logged in users, just update local storage
-        updateSettings(form);
+      if (!response.ok) {
+        throw new Error("Failed to save settings");
       }
-    }
 
-    setOpen(newOpen);
-    if (!newOpen) {
-      setIsDirty(false); // Reset dirty state when closing
+      // Update local state after successful save
+      updateSettings(settingsToSave);
+      // toast.success("Settings saved successfully");
+    } catch (error) {
+      console.error("Error saving settings:", error);
+      toast.error("Failed to save settings");
+    }
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    if (open && !newOpen && isDirty) {
+      // Close dialog first
+      setOpen(newOpen);
+      setIsDirty(false);
+
+      // Prepare settings to save
+      const settingsToSave = {
+        pomodoroTime: Number(form.pomodoroTime),
+        shortBreakTime: Number(form.shortBreakTime),
+        longBreakTime: Number(form.longBreakTime),
+        autoStartBreaks: form.autoStartBreaks,
+        autoStartPomodoros: form.autoStartPomodoros,
+        longBreakInterval: Number(form.longBreakInterval),
+        pomodoroColor: form.pomodoroColor,
+        shortBreakColor: form.shortBreakColor,
+        longBreakColor: form.longBreakColor,
+        volume: form.volume,
+        alarmSound: form.alarmSound,
+        backsound: form.backsound,
+        alarmRepeat: Number(form.alarmRepeat),
+      };
+
+      // Update local store immediately
+      updateSettings(settingsToSave);
+
+      // For logged-in users, also save to API
+      if (session?.user) {
+        saveSettings(settingsToSave);
+      }
+    } else {
+      setOpen(newOpen);
+      if (!newOpen) {
+        setIsDirty(false);
+      }
     }
   };
 
@@ -329,7 +337,7 @@ export function SettingsDialog() {
           <Settings className="h-5 w-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="p-6 w-xl md:w-md">
+      <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
         </DialogHeader>
@@ -363,7 +371,7 @@ export function SettingsDialog() {
             {/* Timer Settings Section */}
             <div className="space-y-4">
               <h3 className="text-base font-semibold">Timer</h3>
-              <div className="flex gap-4 justify-between w-full">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
                 <div className="space-y-2">
                   <Label htmlFor="pomodoro" className="text-sm">
                     Pomodoro
@@ -593,7 +601,7 @@ export function SettingsDialog() {
             {COLOR_OPTIONS.map((color) => (
               <button
                 key={color.value}
-                className={`relative w-15 h-15 rounded-lg border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all duration-150 hover:scale-110 ${
+                className={`relative w-10 h-10 md:w-15 md:h-15 rounded-lg border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all duration-150 hover:scale-110 ${
                   (colorPickerMode === "pomodoro" &&
                     form.pomodoroColor === color.value) ||
                   (colorPickerMode === "shortBreak" &&

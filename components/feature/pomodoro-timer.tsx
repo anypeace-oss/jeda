@@ -24,6 +24,7 @@ export function PomodoroTimer() {
     incrementCompletedPomodoros,
     loadUserSettings,
     initializeTimeLeft,
+    setTimeLeft,
   } = useTimerStore();
   const backgroundColor = useTimerBackground();
   const hasSentFocusTime = useRef(false);
@@ -35,6 +36,8 @@ export function PomodoroTimer() {
   const alarmRepeatCountRef = useRef<number>(0);
 
   const prevTimeLeft = useRef(timeLeft);
+  const lastSaveTimeRef = useRef<number>(0);
+  const SAVE_COOLDOWN = 2000; // 2 seconds cooldown between saves
 
   // Initialize timer state on mount
   useEffect(() => {
@@ -195,10 +198,47 @@ export function PomodoroTimer() {
     toggleTimer();
   }, [playButtonSound, toggleTimer]);
 
-  const handleSkip = async () => {
-    // Try to save focus time if user is logged in
+  const saveSkipFocusTime = async (focusTime: number) => {
+    if (!session?.user?.id) return;
+
+    const now = Date.now();
+    if (now - lastSaveTimeRef.current < SAVE_COOLDOWN) {
+      // Skip saving if within cooldown period
+      return;
+    }
+    lastSaveTimeRef.current = now;
+
+    try {
+      const response = await fetch("/api/stats/track", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ focusTime }),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Failed to save focus time");
+      }
+    } catch (error) {
+      console.error("Failed to save focus time:", error);
+      toast.error("Failed to save focus time", {
+        description: "Please try again or check your connection",
+      });
+    }
+  };
+
+  const handleSkip = () => {
     let nextMode: TimerMode = "pomodoro"; // Default if skipping a break
+    let focusTimeToSave = 0;
+
     if (mode === "pomodoro") {
+      // Calculate focus time before changing state
+      const initialTime = settings.pomodoroTime * 60;
+      focusTimeToSave = initialTime - timeLeft;
+
       // Increment first, then check
       incrementCompletedPomodoros();
       const currentCompleted = useTimerStore.getState().completedPomodoros; // Get updated count
@@ -207,32 +247,16 @@ export function PomodoroTimer() {
         settings.longBreakInterval > 0 &&
         currentCompleted % settings.longBreakInterval === 0;
       nextMode = shouldTakeLongBreak ? "longBreak" : "shortBreak";
+    }
 
-      // Only track focus time if in pomodoro mode
+    // Perform skip immediately
+    setMode(nextMode);
+
+    // Handle focus time saving after skip
+    if (mode === "pomodoro") {
       if (session?.user?.id) {
-        const initialTime = settings.pomodoroTime * 60;
-        const focusTime = initialTime - timeLeft;
-        // Send focus time, but don't wait for it
-        try {
-          const response = await fetch("/api/stats/track", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ focusTime }),
-            credentials: "include",
-          });
-
-          if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.error || "Failed to save focus time");
-          }
-        } catch (error) {
-          console.error("Failed to save focus time:", error);
-          toast.error("Failed to save focus time", {
-            description: "Please try again or check your connection",
-          });
-        }
+        // Save focus time asynchronously
+        saveSkipFocusTime(focusTimeToSave);
       } else if (!error) {
         // Only show login prompt if there's no session error
         toast.warning("Please login to save your focus time", {
@@ -247,8 +271,6 @@ export function PomodoroTimer() {
         });
       }
     }
-
-    await setMode(nextMode);
   };
 
   useEffect(() => {
@@ -290,9 +312,7 @@ export function PomodoroTimer() {
 
     if (isRunning && timeLeft > 0) {
       interval = setInterval(() => {
-        useTimerStore.setState((state) => ({
-          timeLeft: state.timeLeft - 1,
-        }));
+        setTimeLeft(timeLeft - 1);
       }, 1000);
     } else if (isRunning && timeLeft === 0) {
       handleTimerEnd();
@@ -308,6 +328,7 @@ export function PomodoroTimer() {
     settings,
     setMode,
     incrementCompletedPomodoros,
+    setTimeLeft,
   ]);
 
   // Separate effect for tracking focus time
@@ -355,6 +376,11 @@ export function PomodoroTimer() {
         e.target instanceof HTMLInputElement ||
         e.target instanceof HTMLTextAreaElement
       ) {
+        return;
+      }
+
+      // Ignore if any modifier key is pressed (Ctrl, Command, Alt, Shift)
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
         return;
       }
 

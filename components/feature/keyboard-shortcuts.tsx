@@ -6,11 +6,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+import { useEffect } from "react";
+
 const SHORTCUTS = [
   { key: "Space", action: "Start/Pause timer" },
   { key: "1", action: "Switch to Pomodoro" },
   { key: "2", action: "Switch to Short Break" },
   { key: "3", action: "Switch to Long Break" },
+  { key: "r", action: "Open/Close Stats" },
+  { key: "s", action: "Open/Close Settings" },
+  { key: "k", action: "Open/Close  Keyboard Shortcuts" },
 ];
 
 type KeyboardShortcutsProps = {
@@ -22,6 +27,37 @@ export function KeyboardShortcuts({
   open,
   onOpenChange,
 }: KeyboardShortcutsProps) {
+  // Add keyboard shortcut handler
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Ignore if any modifier key is pressed
+      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+        return;
+      }
+
+      if (e.key.toLowerCase() === "k") {
+        e.preventDefault();
+
+        if (!open) {
+          onOpenChange(true);
+        } else {
+          onOpenChange(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [open, onOpenChange]);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
