@@ -1,11 +1,22 @@
 "use client";
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useTimerBackground } from "@/lib/hooks/use-timer-background";
+import Link from "next/link";
 export default function SignInPage() {
   const [githubLoading, setGithubLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -125,6 +136,47 @@ export default function SignInPage() {
               </>
             )}
           </Button>
+
+          <div className="relative my-6 flex items-center">
+            <div className="flex-grow border-t border-gray-300" />
+            <span className="mx-4 text-sm text-gray-300 font-mono">
+              or just vibe
+            </span>
+            <div className="flex-grow border-t border-gray-300" />
+          </div>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="w-full font-normal">
+                Nah, I&apos;m good 😎 (Continue as ghost)
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Ghost mode 👻</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Your data will only live in your browser. If you close it,
+                  poof — it&apos;s gone 🫥
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className="bg-muted text-foreground hover:bg-muted/80">
+                  Hmm... maybe I *will* log in
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 text-white hover:bg-red-600"
+                  asChild
+                >
+                  <Link href="/">YEAH, I&apos;m good 😎</Link>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <p className="text-xs mt-3 text-center text-white/70 font-mono italic">
+            Logging in unlocks streaks, progress sync, and secret productivity
+            sauce 🔐🔥
+          </p>
         </div>
 
         <p className="text-xs  text-center  absolute bottom-10 left-0 right-0 font-mono dark:text-foreground">

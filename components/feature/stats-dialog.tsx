@@ -26,6 +26,7 @@ import {
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import Link from "next/link";
 
 const ITEMS_PER_PAGE = 25;
 
@@ -207,8 +208,8 @@ export function StatsDialog() {
         </DialogHeader>
 
         {!session?.user ? (
-          <div className="text-center py-8 text-muted-foreground">
-            Please sign in to view your statistics
+          <div className="text-center py-8 text-muted-foreground underline">
+            <Link href="/login">Sign in to view your statistics 🔥</Link>
           </div>
         ) : (
           <Tabs defaultValue="summary" className="w-full">
