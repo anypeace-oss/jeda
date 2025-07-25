@@ -196,9 +196,9 @@ export function StatsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <Tooltip>
-          <TooltipTrigger>
+      <DialogTrigger asChild>
+        <Tooltip delayDuration={0}>
+          <TooltipTrigger asChild>
             <Button variant="outline" size="icon">
               <BarChart className="h-5 w-5" />
             </Button>

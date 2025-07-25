@@ -88,9 +88,9 @@ export function UserButton() {
             <Link href={"/login"}>Sign In</Link>
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Tooltip>
-                <TooltipTrigger>
+            <DropdownMenuTrigger asChild>
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
                   <Button variant={"outline"} size="icon">
                     <MoreVertical className="w-5 h-5" />
                   </Button>

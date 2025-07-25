@@ -333,18 +333,18 @@ export function SettingsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger >
-        <Tooltip>
-          <TooltipTrigger>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
             <Button variant="outline">
               <Settings className="h-5 w-5" />
             </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Settings [S]</p>
-          </TooltipContent>
-        </Tooltip>
-      </DialogTrigger>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Settings [S]</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
