@@ -128,7 +128,7 @@ export default function SignInPage() {
             variant="default"
             onClick={handleGitHubSignIn}
             className="w-full font-normal"
-            disabled={githubLoading || googleLoading}
+            disabled={githubLoading || googleLoading || discordLoading}
           >
             {githubLoading ? (
               <Loader className="w-4 h-4 animate-spin" />
