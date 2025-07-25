@@ -30,10 +30,10 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import Image from "next/image";
 import { KeyboardShortcuts } from "../feature/keyboard-shortcuts";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Skeleton } from "../ui/skeleton";
-
+import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 const DELETE_CONFIRMATION_TEXT = "DELETE";
@@ -44,6 +44,32 @@ export function UserButton() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const router = useRouter();
+
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Ignore if ctrl or cmd is pressed
+      if (e.ctrlKey || e.metaKey) {
+        return;
+      }
+
+      if (e.key.toLowerCase() === "l" || e.key.toUpperCase() === "L") {
+        router.push("/login");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [router]);
 
   // Handle account deletion
   const handleDeleteAccount = async () => {
@@ -85,21 +111,26 @@ export function UserButton() {
         />
         <div className="flex items-center gap-2">
           <Button variant={"outline"} asChild>
-            <Link href={"/login"}>Sign In</Link>
+            <Link href={"/login"}>
+              Sign In{" "}
+              <span className="text-[10px] border border-white/70 rounded px-1 ">
+                L
+              </span>
+            </Link>
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
                   <Button variant={"outline"} size="icon">
                     <MoreVertical className="w-5 h-5" />
                   </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>More</p>
-                </TooltipContent>
-              </Tooltip>
-            </DropdownMenuTrigger>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>More</p>
+              </TooltipContent>
+            </Tooltip>
             <DropdownMenuContent align="end" className="w-56 text-xs p-1">
               <DropdownMenuItem asChild>
                 <Link href={"/login"}>

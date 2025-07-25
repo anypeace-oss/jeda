@@ -13,9 +13,9 @@ const SHORTCUTS = [
   { key: "1", action: "Switch to Pomodoro" },
   { key: "2", action: "Switch to Short Break" },
   { key: "3", action: "Switch to Long Break" },
-  { key: "r", action: "Open/Close Stats" },
-  { key: "s", action: "Open/Close Settings" },
-  { key: "k", action: "Open/Close  Keyboard Shortcuts" },
+  { key: "R", action: "Open/Close Stats" },
+  { key: "S", action: "Open/Close Settings" },
+  { key: "K", action: "Open/Close  Keyboard Shortcuts" },
 ];
 
 type KeyboardShortcutsProps = {
@@ -40,11 +40,11 @@ export function KeyboardShortcuts({
       }
 
       // Ignore if any modifier key is pressed
-      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+      if (e.ctrlKey || e.metaKey) {
         return;
       }
 
-      if (e.key.toLowerCase() === "k") {
+      if (e.key.toLowerCase() === "k" || e.key.toUpperCase() === "K") {
         e.preventDefault();
 
         if (!open) {

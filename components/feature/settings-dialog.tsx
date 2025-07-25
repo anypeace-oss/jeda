@@ -110,11 +110,11 @@ export function SettingsDialog() {
       }
 
       // Ignore if any modifier key is pressed
-      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+      if (e.ctrlKey || e.metaKey) {
         return;
       }
 
-      if (e.key.toLowerCase() === "s") {
+      if (e.key.toLowerCase() === "s" || e.key.toUpperCase() === "S") {
         if (open) {
           setOpen(false);
         } else {
@@ -342,7 +342,7 @@ export function SettingsDialog() {
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Settings [S]</p>
+          <p>Settings [s]</p>
         </TooltipContent>
       </Tooltip>
       <DialogContent>

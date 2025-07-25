@@ -141,11 +141,11 @@ export function StatsDialog() {
       }
 
       // Ignore if any modifier key is pressed
-      if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) {
+      if (e.ctrlKey || e.metaKey) {
         return;
       }
 
-      if (e.key.toLowerCase() === "r") {
+      if (e.key.toLowerCase() === "r" || e.key.toUpperCase() === "R") {
         e.preventDefault();
         setOpen((prev) => !prev);
       }
