@@ -196,18 +196,18 @@ export function StatsDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Tooltip delayDuration={0}>
-          <TooltipTrigger asChild>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
             <Button variant="outline" size="icon">
               <BarChart className="h-5 w-5" />
             </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Report [R]</p>
-          </TooltipContent>
-        </Tooltip>
-      </DialogTrigger>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Report [R]</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold mb-4">
