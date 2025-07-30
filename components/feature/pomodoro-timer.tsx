@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { formatTime } from "@/lib/utils";
 import type { TimerMode } from "@/lib/store/timer";
 import { useRouter } from "next/navigation";
-import Footer from "@/components/layout/footer";
 import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 import { authClient } from "@/lib/auth-client";
 
@@ -406,8 +405,11 @@ export function PomodoroTimer() {
   }, [handleToggleTimer, setMode]);
 
   return (
-    <div className="flex flex-col items-center   " style={{ backgroundColor }}>
-      {/* Hidden audio element for backsound */}
+    <div
+      className="flex flex-col items-center pb-60 pt-20"
+      style={{ backgroundColor }}
+    >
+      {/* Hidden audio element for backsound */}  
       <audio ref={backsoundRef} preload="auto" />
       <div className=" pb-8  rounded-sm  w-[95%] lg:w-md mt-10 ">
         <Tabs
@@ -482,9 +484,6 @@ export function PomodoroTimer() {
             </div>
           </div>
         </div>
-      </div>
-      <div className="pt-32 pb-10 ">
-        <Footer />
       </div>
     </div>
   );
