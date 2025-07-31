@@ -13,7 +13,7 @@ export default function Expalin() {
   ];
 
   return (
-    <div className="max-w-xl mx-auto px-6 py-10 space-y-12 leading-relaxed text-foreground/80 font-light  text-justify">
+    <div className="max-w-xl mx-auto px-6 py-10 space-y-12 leading-relaxed text-foreground/80 font-light  text-justify  ">
       {/* Apa itu Jeda? */}
       <section>
         <h2 className="text-2xl md:text-3xl font-semibold mb-4 flex items-center gap-2 ">

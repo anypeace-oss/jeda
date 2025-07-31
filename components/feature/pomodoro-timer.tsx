@@ -404,12 +404,44 @@ export function PomodoroTimer() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [handleToggleTimer, setMode]);
 
+  // Add title update effect
+  useEffect(() => {
+    const getTitle = () => {
+      const timeString = formatTime(timeLeft);
+      let modeText = "";
+
+      switch (mode) {
+        case "pomodoro":
+          modeText = "Time to Focus";
+          break;
+        case "shortBreak":
+          modeText = "Short Break";
+          break;
+        case "longBreak":
+          modeText = "Long Break";
+          break;
+      }
+
+      return isRunning
+        ? `${timeString} - ${modeText}`
+        : "Jeda - Pomodoro Timer";
+    };
+
+    // Update title
+    document.title = getTitle();
+
+    // Cleanup - reset title when component unmounts
+    return () => {
+      document.title = "Jeda - Pomodoro Timer";
+    };
+  }, [timeLeft, mode, isRunning]);
+
   return (
     <div
       className="flex flex-col items-center pb-60 pt-20"
       style={{ backgroundColor }}
     >
-      {/* Hidden audio element for backsound */}  
+      {/* Hidden audio element for backsound */}
       <audio ref={backsoundRef} preload="auto" />
       <div className=" pb-8  rounded-sm  w-[95%] lg:w-md mt-10 ">
         <Tabs
