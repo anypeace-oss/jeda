@@ -66,7 +66,7 @@ export const DEFAULT_SETTINGS: SettingsData = {
   pomodoroColor: "oklch(0.5425 0.1342 23.73)",
   shortBreakColor: "oklch(0.5406 0.067 196.69)",
   longBreakColor: "oklch(0.4703 0.0888 247.87)",
-  volume: 1,
+  volume: 0.5,
   alarmSound: "alarm-bell.mp3",
   backsound: "",
   alarmRepeat: 1,
@@ -499,11 +499,11 @@ export function SettingsDialog() {
 
             {/* Sound Settings Section */}
             <div className="space-y-4">
-              <h3 className="text-base font-semibold">Sound</h3>
+              <h3 className="text-base font-semibold">Alarm and Backsound</h3>
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="volume" className="text-sm mb-2 block">
-                    Volume
+                    Volume Alarm and Backsound
                   </Label>
                   <div className="flex items-center gap-4 w-full justify-center">
                     <Slider
@@ -524,7 +524,7 @@ export function SettingsDialog() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="alarmSound" className="text-sm mb-2 block">
-                      Alarm Sound
+                      Alarm
                     </Label>
                     <select
                       id="alarmSound"

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 import Image from "next/image";
 import { UserButton } from "./user-button";
+import SoundDialog from "../feature/sound-dialog";
 
 export default function Header() {
   const backgroundColor = useTimerBackground();
@@ -22,9 +23,9 @@ export default function Header() {
             </h1>
           </Link>
           <div className="flex items-center gap-2">
-            <SettingsDialog />
-
+            <SoundDialog />
             <StatsDialog />
+            <SettingsDialog />
             <UserButton />
           </div>
         </div>

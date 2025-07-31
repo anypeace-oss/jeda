@@ -47,7 +47,7 @@ export const defaultSettings: Settings = {
   longBreakColor: "oklch(0.4703 0.0888 247.87)",
   volume: 1,
   alarmSound: "alarm-bell.mp3",
-  backsound: "ticking-fast.mp3",
+  backsound: "none",
   alarmRepeat: 1,
 };
 

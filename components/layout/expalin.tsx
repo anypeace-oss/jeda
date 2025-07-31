@@ -13,7 +13,10 @@ export default function Expalin() {
   ];
 
   return (
-    <div className="max-w-xl mx-auto px-6 py-10 space-y-12 leading-relaxed text-foreground/80 font-light  text-justify  ">
+    <div className="max-w-xl mx-auto px-6 py-10 space-y-12 leading-relaxed text-foreground/80 font-light text-center md:text-left ">
+      <h1 className="text-4xl font-medium mb-10  flex items-center gap-2 justify-center md:justify-start ">
+        An online Pomodoro Timer to boost your productivity
+      </h1>
       {/* Apa itu Jeda? */}
       <section>
         <h2 className="text-2xl md:text-3xl font-semibold mb-4 flex items-center gap-2 ">
