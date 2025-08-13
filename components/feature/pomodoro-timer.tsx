@@ -72,7 +72,7 @@ export function PomodoroTimer() {
     if (typeof window !== "undefined") {
       const audio = new Audio("sounds/button-press.wav");
       audio.volume = settings.volume ?? 1;
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
       // Cleanup after playing
       audio.onended = () => audio.remove();
     }
@@ -99,7 +99,7 @@ export function PomodoroTimer() {
           alarmRepeatCountRef.current++;
           if (alarmRef.current) {
             alarmRef.current.currentTime = 0;
-            alarmRef.current.play().catch(() => {});
+            alarmRef.current.play().catch(() => { });
           }
         } else {
           // Cleanup after all repeats are done
@@ -143,7 +143,7 @@ export function PomodoroTimer() {
 
       // Only play if not already playing
       if (backsoundRef.current.paused) {
-        backsoundRef.current.play().catch(() => {});
+        backsoundRef.current.play().catch(() => { });
       }
     } else {
       // Stop playing if mode changes, timer stops, or backsound is set to none
@@ -438,12 +438,12 @@ export function PomodoroTimer() {
 
   return (
     <div
-      className="flex flex-col items-center pb-60 pt-20"
+      className="flex flex-col items-center pb-50  shadow-2xl"
       style={{ backgroundColor }}
     >
       {/* Hidden audio element for backsound */}
       <audio ref={backsoundRef} preload="auto" />
-      <div className=" pb-8  rounded-sm  w-[95%] lg:w-md mt-10 ">
+      <div className=" pb-8  mt-10">
         <Tabs
           defaultValue="pomodoro"
           value={mode}
@@ -453,17 +453,18 @@ export function PomodoroTimer() {
           <TabsList className="grid grid-cols-3 w-fit mx-auto    bg-transparent">
             <TabsTrigger
               value="pomodoro"
-              className="  border-0 font-fredoka   font-medium"
+              className="py-3 px-5  border-0 font-fredoka   font-medium"
             >
               Pomodoros
             </TabsTrigger>
             <TabsTrigger
               value="shortBreak"
-              className=" border-0 font-fredoka  font-medium"
+              className="py-3 px-5 border-0 font-fredoka  font-medium"
             >
               Short Break
             </TabsTrigger>
-            <TabsTrigger value="longBreak" className=" border-0  font-medium">
+            <TabsTrigger value="longBreak"
+              className="py-3 px-5 border-0  font-medium">
               Long Break
             </TabsTrigger>
           </TabsList>
@@ -473,9 +474,11 @@ export function PomodoroTimer() {
         </Tabs>
 
         <div className="text-center mb-8">
-          <span className="text-9xl font-fredoka font-semibold text-primary ">
+          <span className="text-[150px] sm:text-[170px] md:text-[180px] lg:text-[190px] font-fredoka font-semibold text-primary">
             {formatTime(timeLeft)}
           </span>
+
+
         </div>
 
         <div className="flex justify-center space-x-4 relative">
@@ -488,11 +491,10 @@ export function PomodoroTimer() {
               shadow-[0_8px_0_0_rgba(255,255,255,0.2),0_0_0_2px_rgba(255,255,255,0.05)]
               active:shadow-[0_0_0_0_rgba(255,255,255,0.1),0_0_0_2px_rgba(255,255,255,0.05)]
               active:translate-y-2
-              ${
-                isRunning
+              ${isRunning
                   ? "translate-y-2 shadow-[0_0_0_0_rgba(255,255,255,0.1),0_0_0_2px_rgba(255,255,255,0.05)]"
                   : ""
-              }`}
+                }`}
               style={{ color: getBackgroundColor() }}
             >
               {isRunning ? "PAUSE" : "START"}
@@ -502,11 +504,10 @@ export function PomodoroTimer() {
               className={`
                   absolute -right-20 top-[60%] -translate-y-1/2
                   transition-all duration-300 ease-in-out
-                  ${
-                    isRunning
-                      ? "opacity-70 visible scale-100"
-                      : "opacity-0 invisible scale-95"
-                  }
+                  ${isRunning
+                  ? "opacity-70 visible scale-100"
+                  : "opacity-0 invisible scale-95"
+                }
                 `}
             >
               <SkipForward
@@ -517,6 +518,7 @@ export function PomodoroTimer() {
           </div>
         </div>
       </div>
+      {/* <p className="text-primary pt-20 pb-10"><strong>Jeda</strong> by <a href="example.com">Any Peace</a></p> */}
     </div>
   );
 }

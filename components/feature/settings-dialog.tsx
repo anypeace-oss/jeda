@@ -283,7 +283,7 @@ export function SettingsDialog() {
       const audio = new Audio(`sounds/${type}/${file}`);
       audio.volume = form.volume ?? 1;
       setPreviewAudio(audio);
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
       setTimeout(() => {
         audio.pause();
         audio.remove();
@@ -303,7 +303,7 @@ export function SettingsDialog() {
     if (!previewAudio) {
       const audio = new Audio("sounds/button-press.wav");
       audio.volume = newVolume;
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
       // Clean up the audio element after it finishes playing
       audio.onended = () => {
         audio.remove();
@@ -342,7 +342,7 @@ export function SettingsDialog() {
           </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Settings [s]</p>
+          <p>Settings [S]</p>
         </TooltipContent>
       </Tooltip>
       <DialogContent>
@@ -609,16 +609,15 @@ export function SettingsDialog() {
             {COLOR_OPTIONS.map((color) => (
               <button
                 key={color.value}
-                className={`relative w-10 h-10 md:w-15 md:h-15 rounded-lg border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all duration-150 hover:scale-110 ${
-                  (colorPickerMode === "pomodoro" &&
+                className={`relative w-10 h-10 md:w-15 md:h-15 rounded-lg border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all duration-150 hover:scale-110 ${(colorPickerMode === "pomodoro" &&
                     form.pomodoroColor === color.value) ||
-                  (colorPickerMode === "shortBreak" &&
-                    form.shortBreakColor === color.value) ||
-                  (colorPickerMode === "longBreak" &&
-                    form.longBreakColor === color.value)
+                    (colorPickerMode === "shortBreak" &&
+                      form.shortBreakColor === color.value) ||
+                    (colorPickerMode === "longBreak" &&
+                      form.longBreakColor === color.value)
                     ? "ring-2 ring-primary scale-110"
                     : ""
-                }`}
+                  }`}
                 style={{ backgroundColor: color.value }}
                 onClick={() => handleColorPick(color.value)}
                 title={color.name}
@@ -630,20 +629,20 @@ export function SettingsDialog() {
                     form.shortBreakColor === color.value) ||
                   (colorPickerMode === "longBreak" &&
                     form.longBreakColor === color.value)) && (
-                  <svg
-                    className="absolute left-1 top-1 w-4 h-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                )}
+                    <svg
+                      className="absolute left-1 top-1 w-4 h-4 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
               </button>
             ))}
           </div>

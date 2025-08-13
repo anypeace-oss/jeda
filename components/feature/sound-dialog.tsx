@@ -10,7 +10,9 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { AudioLines, Pause, Play, RefreshCw } from "lucide-react";
+
 import { Slider } from "../ui/slider";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 // Sound data with name, icon, and source path
 const AMBIENT_SOUNDS = [
@@ -116,6 +118,35 @@ export default function SoundDialog() {
       });
     };
   }, []); // Empty deps array since we only want this on mount/unmount
+
+  // Add keyboard shortcut handler
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Ignore if any modifier key is pressed
+      if (e.ctrlKey || e.metaKey) {
+        return;
+      }
+
+      if (e.key.toLowerCase() === "a" || e.key.toUpperCase() === "A") {
+        if (dialogOpen) {
+          setDialogOpen(false);
+        } else {
+          setDialogOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [dialogOpen, setDialogOpen]);
 
   const toggleSound = (soundId: string) => {
     const sound = AMBIENT_SOUNDS.find((s) => s.id === soundId);
@@ -231,7 +262,7 @@ export default function SoundDialog() {
 
         if (audio && state.volume > 0) {
           audio.volume = state.volume / 100;
-          audio.play().catch(() => {});
+          audio.play().catch(() => { });
         }
       });
 
@@ -278,16 +309,23 @@ export default function SoundDialog() {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
-          <AudioLines className="h-5 w-5" />
-          {playingCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground w-4 h-4 rounded-full text-[10px] flex items-center justify-center">
-              {playingCount}
-            </span>
-          )}
-        </Button>
-      </DialogTrigger>
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="icon" className="relative">
+              <AudioLines className="h-5 w-5" />
+              {playingCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground w-4 h-4 rounded-full text-[10px] flex items-center justify-center">
+                  {playingCount}
+                </span>
+              )}
+            </Button>
+          </DialogTrigger>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Ambient [A]</p>
+        </TooltipContent>
+      </Tooltip>
       <DialogContent>
         <DialogHeader className="flex flex-row items-center ">
           <DialogTitle className="text-xl font-medium">Sounds</DialogTitle>
@@ -331,17 +369,15 @@ export default function SoundDialog() {
                 className={`
                   relative group cursor-pointer rounded-lg p-4 
                   transition-all duration-200 border
-                  ${
-                    state.isPlaying
-                      ? "bg-primary/5 "
-                      : isPaused
+                  ${state.isPlaying
+                    ? "bg-primary/5 "
+                    : isPaused
                       ? "bg-muted/50  hover:bg-muted"
                       : "bg-card hover:bg-accent border-muted"
                   }
-                  ${
-                    state.isPlaying
-                      ? "opacity-100"
-                      : isPaused
+                  ${state.isPlaying
+                    ? "opacity-100"
+                    : isPaused
                       ? "opacity-90"
                       : "opacity-70 hover:opacity-90"
                   }
@@ -350,26 +386,24 @@ export default function SoundDialog() {
                 <div className="text-center mb-3">
                   <span
                     className={`text-2xl select-none
-                    ${
-                      state.isPlaying
+                    ${state.isPlaying
                         ? "opacity-100"
                         : isPaused
-                        ? "opacity-90"
-                        : "opacity-60 hover:opacity-90"
-                    }
+                          ? "opacity-90"
+                          : "opacity-60 hover:opacity-90"
+                      }
                     `}
                   >
                     {sound.icon}
                   </span>
                   <p
                     className={`text-sm font-medium mt-1
-                    ${
-                      state.isPlaying
+                    ${state.isPlaying
                         ? "opacity-100"
                         : isPaused
-                        ? "opacity-90"
-                        : "opacity-60 hover:opacity-90"
-                    }
+                          ? "opacity-90"
+                          : "opacity-60 hover:opacity-90"
+                      }
                     `}
                   >
                     {sound.name}
@@ -379,10 +413,9 @@ export default function SoundDialog() {
                 <div
                   className={`
                     transition-all duration-200
-                    ${
-                      state.isPlaying || isPaused
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2 pointer-events-none"
+                    ${state.isPlaying || isPaused
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-2 pointer-events-none"
                     }
                   `}
                   onClick={(e) => e.stopPropagation()} // Prevent card click when clicking slider container
