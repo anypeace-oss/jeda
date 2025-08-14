@@ -449,7 +449,7 @@ export function PomodoroTimer() {
           onValueChange={(value) => setMode(value as TimerMode)}
           className="mb-6"
         >
-          <TabsList className="grid grid-cols-3 w-fit mx-auto bg-foreground/20">
+          <TabsList className="grid grid-cols-3 w-fit mx-auto bg-transparent  ">
             <TabsTrigger
               value="pomodoro"
               className=" border-0 font-fredoka   font-medium"
@@ -473,7 +473,7 @@ export function PomodoroTimer() {
         </Tabs>
 
         <div className="text-center mb-8">
-          <span className="text-[120px] sm:text-[150px] md:text-[170px] lg:text-[190px] font-fredoka font-semibold text-primary">
+          <span className="text-[120px] sm:text-[150px] md:text-[170px] lg:text-[190px] font-fredoka font-medium text-primary">
             {formatTime(timeLeft)}
           </span>
 
