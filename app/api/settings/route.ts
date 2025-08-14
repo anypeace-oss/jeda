@@ -19,6 +19,8 @@ const DEFAULT_SETTINGS = {
   alarmSound: "alarm-bell.mp3",
   backsound: "",
   alarmRepeat: 1,
+  backgroundType: "color",
+  backgroundImage: "",
 } as const;
 
 export async function GET() {
@@ -79,6 +81,8 @@ export async function POST(request: Request) {
       alarmSound,
       backsound,
       alarmRepeat,
+      backgroundType,
+      backgroundImage,
     } = body;
 
     const settingsData = {
@@ -96,6 +100,8 @@ export async function POST(request: Request) {
       alarmSound,
       backsound,
       alarmRepeat,
+      backgroundType,
+      backgroundImage,
       updatedAt: new Date(),
     };
 

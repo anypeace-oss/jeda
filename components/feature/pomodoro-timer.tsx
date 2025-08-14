@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import { formatTime } from "@/lib/utils";
 import type { TimerMode } from "@/lib/store/timer";
 import { useRouter } from "next/navigation";
-import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 import { authClient } from "@/lib/auth-client";
 
 export function PomodoroTimer() {
@@ -25,7 +24,7 @@ export function PomodoroTimer() {
     initializeTimeLeft,
     setTimeLeft,
   } = useTimerStore();
-  const backgroundColor = useTimerBackground();
+
   const hasSentFocusTime = useRef(false);
   const router = useRouter();
   const { data: session, error } = authClient.useSession();
@@ -438,8 +437,8 @@ export function PomodoroTimer() {
 
   return (
     <div
-      className="flex flex-col items-center pb-50  shadow-2xl"
-      style={{ backgroundColor }}
+      className="relative flex flex-col items-center pb-50  shadow-2xl"
+    // style={{ backgroundColor }}
     >
       {/* Hidden audio element for backsound */}
       <audio ref={backsoundRef} preload="auto" />
@@ -450,21 +449,21 @@ export function PomodoroTimer() {
           onValueChange={(value) => setMode(value as TimerMode)}
           className="mb-6"
         >
-          <TabsList className="grid grid-cols-3 w-fit mx-auto    bg-transparent">
+          <TabsList className="grid grid-cols-3 w-fit mx-auto bg-transparent   ">
             <TabsTrigger
               value="pomodoro"
-              className="py-3 px-5  border-0 font-fredoka   font-medium"
+              className="  border-0 font-fredoka   font-medium"
             >
               Pomodoros
             </TabsTrigger>
             <TabsTrigger
               value="shortBreak"
-              className="py-3 px-5 border-0 font-fredoka  font-medium"
+              className=" border-0 font-fredoka  font-medium"
             >
               Short Break
             </TabsTrigger>
             <TabsTrigger value="longBreak"
-              className="py-3 px-5 border-0  font-medium">
+              className=" border-0  font-medium">
               Long Break
             </TabsTrigger>
           </TabsList>
@@ -486,19 +485,24 @@ export function PomodoroTimer() {
             <Button
               onClick={handleToggleTimer}
               variant="default"
-              className={`px-16 py-7 bg-primary hover:bg-primary/90 rounded-sm text-lg font-bold
-              transition-all duration-75 ease-in-out
-              shadow-[0_8px_0_0_rgba(255,255,255,0.2),0_0_0_2px_rgba(255,255,255,0.05)]
-              active:shadow-[0_0_0_0_rgba(255,255,255,0.1),0_0_0_2px_rgba(255,255,255,0.05)]
-              active:translate-y-2
-              ${isRunning
+              className={`
+                    px-16 py-7 bg-primary hover:bg-primary/90 rounded-sm text-lg font-bold
+                    transition-all duration-75 ease-in-out
+                    shadow-[0_8px_0_0_rgba(255,255,255,0.2),0_0_0_2px_rgba(255,255,255,0.05)]
+                    active:shadow-[0_0_0_0_rgba(255,255,255,0.1),0_0_0_2px_rgba(255,255,255,0.05)]
+                    active:translate-y-2
+                    ${isRunning
                   ? "translate-y-2 shadow-[0_0_0_0_rgba(255,255,255,0.1),0_0_0_2px_rgba(255,255,255,0.05)]"
                   : ""
-                }`}
-              style={{ color: getBackgroundColor() }}
+                }  
+                  `}
+              style={{
+                color: settings.backgroundType === "image" ? "black" : getBackgroundColor(),
+              }}
             >
               {isRunning ? "PAUSE" : "START"}
             </Button>
+
 
             <div
               className={`

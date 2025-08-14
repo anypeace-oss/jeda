@@ -56,6 +56,8 @@ export const settings = pgTable("settings", {
   volume: real("volume").notNull().default(1),
   alarmSound: text("alarm_sound").notNull().default("alarm-bell.mp3"),
   backsound: text("backsound").notNull().default(""),
+  backgroundType: text("background_type").notNull().default("color"), // 'color' | 'image'
+  backgroundImage: text("background_image").notNull().default(""), // bisa menyimpan URL, nama file preset, atau ID gambar
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

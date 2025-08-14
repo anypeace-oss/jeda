@@ -33,6 +33,8 @@ export type Settings = {
   alarmSound: string;
   backsound: string;
   alarmRepeat: number;
+  backgroundType: "color" | "image";
+  backgroundImage: string;
 };
 
 export const defaultSettings: Settings = {
@@ -49,6 +51,8 @@ export const defaultSettings: Settings = {
   alarmSound: "alarm-bell.mp3",
   backsound: "none",
   alarmRepeat: 1,
+  backgroundType: "color",
+  backgroundImage: "/adv.png",
 };
 
 export const useTimerStore = create<TimerState>()(

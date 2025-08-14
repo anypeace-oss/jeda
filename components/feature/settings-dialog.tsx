@@ -16,13 +16,14 @@ import {
   DialogTitle as ShadDialogTitle,
 } from "@/components/ui/dialog";
 
-import { useTimerStore } from "@/lib/store/timer";
+import { useTimerStore, type Settings as TimerSettings } from "@/lib/store/timer";
 import { defaultSettings } from "@/lib/store/timer";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "../ui/scroll-area";
+import { ImageGallery } from "./image-gallery";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
@@ -54,6 +55,8 @@ export type SettingsData = {
   alarmSound: string;
   backsound: string;
   alarmRepeat: number;
+  backgroundType: "color" | "image";
+  backgroundImage: string;
 };
 
 export const DEFAULT_SETTINGS: SettingsData = {
@@ -70,6 +73,8 @@ export const DEFAULT_SETTINGS: SettingsData = {
   alarmSound: "alarm-bell.mp3",
   backsound: "",
   alarmRepeat: 1,
+  backgroundType: "color",
+  backgroundImage: "",
 };
 
 const ALARM_OPTIONS = [
@@ -86,7 +91,10 @@ const BACKSOUND_OPTIONS = [
 export function SettingsDialog() {
   const { settings: storedSettings, updateSettings } = useTimerStore();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<SettingsData>(storedSettings);
+  const [form, setForm] = useState<SettingsData>({
+    ...defaultSettings,
+    ...storedSettings,
+  });
   const [isDirty, setIsDirty] = useState(false);
   const [previewAudio, setPreviewAudio] = useState<HTMLAudioElement | null>(
     null
@@ -95,6 +103,7 @@ export function SettingsDialog() {
   const [colorPickerMode, setColorPickerMode] = useState<
     null | "pomodoro" | "shortBreak" | "longBreak"
   >(null);
+  const [isImageGalleryOpen, setIsImageGalleryOpen] = useState(false);
 
   const { data: session } = authClient.useSession();
 
@@ -131,7 +140,10 @@ export function SettingsDialog() {
   useEffect(() => {
     if (open) {
       // Always use stored settings first for immediate display
-      setForm(storedSettings);
+      setForm({
+        ...defaultSettings,
+        ...storedSettings,
+      });
     }
   }, [open, storedSettings]);
 
@@ -221,14 +233,16 @@ export function SettingsDialog() {
         alarmSound: form.alarmSound,
         backsound: form.backsound,
         alarmRepeat: Number(form.alarmRepeat),
+        backgroundType: form.backgroundType,
+        backgroundImage: form.backgroundImage,
       };
 
       // Update local store immediately
-      updateSettings(settingsToSave);
+      updateSettings(settingsToSave as TimerSettings);
 
       // For logged-in users, also save to API
       if (session?.user) {
-        saveSettings(settingsToSave);
+        saveSettings(settingsToSave as TimerSettings);
       }
     } else {
       setOpen(newOpen);
@@ -259,6 +273,26 @@ export function SettingsDialog() {
 
     setForm(newSettings);
     setIsDirty(true);
+
+    // Update background immediately when color is selected
+    updateSettings({
+      pomodoroTime: Number(newSettings.pomodoroTime),
+      shortBreakTime: Number(newSettings.shortBreakTime),
+      longBreakTime: Number(newSettings.longBreakTime),
+      autoStartBreaks: newSettings.autoStartBreaks,
+      autoStartPomodoros: newSettings.autoStartPomodoros,
+      longBreakInterval: Number(newSettings.longBreakInterval),
+      pomodoroColor: newSettings.pomodoroColor,
+      shortBreakColor: newSettings.shortBreakColor,
+      longBreakColor: newSettings.longBreakColor,
+      volume: newSettings.volume,
+      alarmSound: newSettings.alarmSound,
+      backsound: newSettings.backsound,
+      alarmRepeat: Number(newSettings.alarmRepeat),
+      backgroundType: newSettings.backgroundType,
+      backgroundImage: newSettings.backgroundImage,
+    });
+
     closeColorPicker();
   };
 
@@ -336,7 +370,7 @@ export function SettingsDialog() {
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button variant="outline">
+            <Button variant="outline" >
               <Settings className="h-5 w-5" />
             </Button>
           </DialogTrigger>
@@ -349,31 +383,124 @@ export function SettingsDialog() {
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Settings</DialogTitle>
         </DialogHeader>
-        <ScrollArea className="h-[450px]">
+        <ScrollArea className="h-[450px] no-scrollbar">
           <div className="space-y-6">
             {/* Color Theme Section */}
-            <div className="flex justify-between w-full space-y-4">
-              <h3 className="text-base font-semibold">Color Themes</h3>
-              <div className="flex gap-4">
-                <button
-                  className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                  style={{ backgroundColor: form.pomodoroColor }}
-                  onClick={() => openColorPicker("pomodoro")}
-                  title="Pomodoro Color"
-                />
-                <button
-                  className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                  style={{ backgroundColor: form.shortBreakColor }}
-                  onClick={() => openColorPicker("shortBreak")}
-                  title="Short Break Color"
-                />
-                <button
-                  className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
-                  style={{ backgroundColor: form.longBreakColor }}
-                  onClick={() => openColorPicker("longBreak")}
-                  title="Long Break Color"
-                />
+
+            {/* Background Settings Section */}
+            <div className="space-y-4">
+              <h3 className="text-base font-semibold">Background</h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="backgroundType" className="text-sm">
+                      Background Type
+                    </Label>
+                  </div>
+                  <select
+                    id="backgroundType"
+                    className="w-40 rounded border bg-background/50 p-2 text-sm"
+                    value={form.backgroundType}
+                    onChange={(e) => {
+                      const newType = e.target.value as "color" | "image";
+                      setForm({
+                        ...form,
+                        backgroundType: newType,
+                        // When switching to image, keep color options but disable auto-change
+                      });
+                      setIsDirty(true);
+                      // Update background type immediately
+                      updateSettings({
+                        pomodoroTime: Number(form.pomodoroTime),
+                        shortBreakTime: Number(form.shortBreakTime),
+                        longBreakTime: Number(form.longBreakTime),
+                        autoStartBreaks: form.autoStartBreaks,
+                        autoStartPomodoros: form.autoStartPomodoros,
+                        longBreakInterval: Number(form.longBreakInterval),
+                        pomodoroColor: form.pomodoroColor,
+                        shortBreakColor: form.shortBreakColor,
+                        longBreakColor: form.longBreakColor,
+                        volume: form.volume,
+                        alarmSound: form.alarmSound,
+                        backsound: form.backsound,
+                        alarmRepeat: Number(form.alarmRepeat),
+                        backgroundType: newType,
+                        backgroundImage: form.backgroundImage,
+                      });
+                    }}
+                  >
+                    <option value="color">Color</option>
+                    <option value="image">Image</option>
+                  </select>
+                </div>
+
+                {form.backgroundType === "color" && (
+                  <div className="flex justify-between w-full space-y-4">
+                    <Label className="text-sm">Auto-change mode</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Automatically change background colors based on timer mode
+                    </p>
+                  </div>
+                )}
+
+                {form.backgroundType === "image" && (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <ImageGallery
+                        selectedImage={form.backgroundImage}
+                        onImageSelect={(image) => {
+                          setForm({ ...form, backgroundImage: image });
+                          setIsDirty(true);
+                          // Update background immediately when selected
+                          updateSettings({
+                            pomodoroTime: Number(form.pomodoroTime),
+                            shortBreakTime: Number(form.shortBreakTime),
+                            longBreakTime: Number(form.longBreakTime),
+                            autoStartBreaks: form.autoStartBreaks,
+                            autoStartPomodoros: form.autoStartPomodoros,
+                            longBreakInterval: Number(form.longBreakInterval),
+                            pomodoroColor: form.pomodoroColor,
+                            shortBreakColor: form.shortBreakColor,
+                            longBreakColor: form.longBreakColor,
+                            volume: form.volume,
+                            alarmSound: form.alarmSound,
+                            backsound: form.backsound,
+                            alarmRepeat: Number(form.alarmRepeat),
+                            backgroundType: form.backgroundType,
+                            backgroundImage: image,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
+              {form.backgroundType === "color" && (
+                <>
+                  <div className="flex justify-between w-full space-y-4">
+                    <Label className="text-sm">Color Themes</Label>
+                    <div className="flex gap-4">
+                      <button
+                        className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
+                        style={{ backgroundColor: form.pomodoroColor }}
+                        onClick={() => openColorPicker("pomodoro")}
+                        title="Pomodoro Color"
+                      />
+                      <button
+                        className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
+                        style={{ backgroundColor: form.shortBreakColor }}
+                        onClick={() => openColorPicker("shortBreak")}
+                        title="Short Break Color"
+                      />
+                      <button
+                        className="w-8 h-8 rounded-md border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60"
+                        style={{ backgroundColor: form.longBreakColor }}
+                        onClick={() => openColorPicker("longBreak")}
+                        title="Long Break Color"
+                      />
+                    </div>
+                  </div>
+                </>)}
             </div>
 
             {/* Timer Settings Section */}
@@ -584,6 +711,8 @@ export function SettingsDialog() {
                 </div>
               </div>
             </div>
+
+
             <div className="flex justify-end w-full">
               <Button
                 size="sm"
@@ -610,13 +739,13 @@ export function SettingsDialog() {
               <button
                 key={color.value}
                 className={`relative w-10 h-10 md:w-15 md:h-15 rounded-lg border border-background/30 focus:outline-none focus:ring-2 focus:ring-primary/60 transition-all duration-150 hover:scale-110 ${(colorPickerMode === "pomodoro" &&
-                    form.pomodoroColor === color.value) ||
-                    (colorPickerMode === "shortBreak" &&
-                      form.shortBreakColor === color.value) ||
-                    (colorPickerMode === "longBreak" &&
-                      form.longBreakColor === color.value)
-                    ? "ring-2 ring-primary scale-110"
-                    : ""
+                  form.pomodoroColor === color.value) ||
+                  (colorPickerMode === "shortBreak" &&
+                    form.shortBreakColor === color.value) ||
+                  (colorPickerMode === "longBreak" &&
+                    form.longBreakColor === color.value)
+                  ? "ring-2 ring-primary scale-110"
+                  : ""
                   }`}
                 style={{ backgroundColor: color.value }}
                 onClick={() => handleColorPick(color.value)}
@@ -645,6 +774,65 @@ export function SettingsDialog() {
                   )}
               </button>
             ))}
+          </div>
+        </ShadDialogContent>
+      </ShadDialog>
+
+      {/* Image Gallery Dialog */}
+      <ShadDialog open={isImageGalleryOpen} onOpenChange={(open) => {
+        setIsImageGalleryOpen(open);
+        if (!open) {
+          // Update background when closing the gallery
+          updateSettings({
+            pomodoroTime: Number(form.pomodoroTime),
+            shortBreakTime: Number(form.shortBreakTime),
+            longBreakTime: Number(form.longBreakTime),
+            autoStartBreaks: form.autoStartBreaks,
+            autoStartPomodoros: form.autoStartPomodoros,
+            longBreakInterval: Number(form.longBreakInterval),
+            pomodoroColor: form.pomodoroColor,
+            shortBreakColor: form.shortBreakColor,
+            longBreakColor: form.longBreakColor,
+            volume: form.volume,
+            alarmSound: form.alarmSound,
+            backsound: form.backsound,
+            alarmRepeat: Number(form.alarmRepeat),
+            backgroundType: form.backgroundType,
+            backgroundImage: form.backgroundImage,
+          });
+        }
+      }}>
+        <ShadDialogContent className="max-w-md">
+          <ShadDialogTitle className="text-base font-semibold mb-4">
+            Select Background Image
+          </ShadDialogTitle>
+          <div className="max-h-[60vh] overflow-y-auto">
+            <ImageGallery
+              selectedImage={form.backgroundImage}
+              onImageSelect={(image) => {
+                setForm({ ...form, backgroundImage: image });
+                setIsDirty(true);
+                setIsImageGalleryOpen(false);
+                // Update background immediately when selected
+                updateSettings({
+                  pomodoroTime: Number(form.pomodoroTime),
+                  shortBreakTime: Number(form.shortBreakTime),
+                  longBreakTime: Number(form.longBreakTime),
+                  autoStartBreaks: form.autoStartBreaks,
+                  autoStartPomodoros: form.autoStartPomodoros,
+                  longBreakInterval: Number(form.longBreakInterval),
+                  pomodoroColor: form.pomodoroColor,
+                  shortBreakColor: form.shortBreakColor,
+                  longBreakColor: form.longBreakColor,
+                  volume: form.volume,
+                  alarmSound: form.alarmSound,
+                  backsound: form.backsound,
+                  alarmRepeat: Number(form.alarmRepeat),
+                  backgroundType: form.backgroundType,
+                  backgroundImage: image,
+                });
+              }}
+            />
           </div>
         </ShadDialogContent>
       </ShadDialog>
