@@ -1,36 +1,135 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<p align="center">
+  <img src="https://res.cloudinary.com/dxurnpbrc/image/upload/v1755193688/810dec08-559e-435c-8c5b-3de1ca035492.png" alt="Jeda Pomodoro Timer" width="100%" />
+</p>
 
-## Getting Started
+# Jeda - Pomodoro Timer
 
-First, run the development server:
+Jeda is a feature-rich Pomodoro timer application designed to help you stay focused and productive. Built with Next.js and TypeScript, it offers a modern, customizable interface with advanced features like statistics tracking, ambient sounds, and user authentication.
 
+## Features
+
+- **Pomodoro Timer**: Classic 25-minute focus sessions with customizable break times
+- **Multiple Timer Modes**: Pomodoro, Short Break, and Long Break modes
+- **Customizable Settings**: Adjust timer durations, colors, sounds, and more
+- **Background Customization**: Choose between color themes or beautiful preset images
+- **Ambient Sound Support**: Play relaxing background sounds during focus sessions
+- **Statistics Tracking**: Track your focus time and productivity streaks
+- **Keyboard Shortcuts**: Quick access to all features with keyboard commands
+- **User Authentication**: Sign in to save your preferences and track progress
+- **Responsive Design**: Works beautifully on all device sizes
+
+## Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+git clone https://github.com/your-username/jeda-web.git
+cd jeda-web
+```
+
+2. Install dependencies:
+```bash
+bun install
+```
+
+3. Copy the environment template:
+```bash
+cp env.template .env
+```
+
+4. Set up your database and environment variables
+
+5. Run the development server:
+```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Core Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Pomodoro Timer
+- 25-minute focus sessions by default
+- 5-minute short breaks and 15-minute long breaks
+- Automatic switching between modes
+- Start/Pause and Skip functionality
+- Visual progress indicator
 
-## Learn More
+### Settings & Customization
+- Adjustable timer durations for each mode
+- Color themes for each timer mode
+- Background customization (color or image)
+- Volume control for alarms and backsounds
+- Alarm sound selection
+- Auto-start settings for breaks and pomodoros
+- Long break interval configuration
 
-To learn more about Next.js, take a look at the following resources:
+### Ambient Sounds
+- Play relaxing background sounds during focus sessions
+- Multiple ambient sound options (rain, ocean, etc.)
+- Individual volume control for each sound
+- Play/pause and reset all sounds functionality
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Statistics & Tracking
+- Track your focus time and productivity
+- View your current streak and days accessed
+- Leaderboard rankings for users
+- Daily statistics tracking
+- Session history
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Keyboard Shortcuts
+- **Space**: Start/Pause timer
+- **1**: Switch to Pomodoro mode
+- **2**: Switch to Short Break mode
+- **3**: Switch to Long Break mode
+- **R**: Open/Close Stats
+- **S**: Open/Close Settings
+- **K**: Open/Close Keyboard Shortcuts
+- **A**: Open/Close Ambient Sounds
 
-## Deploy on Vercel
+## Authentication
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Jeda uses Better Auth for user authentication with support for:
+- Email/password login
+- Social login (GitHub, Google, Discord)
+- Session management
+- User preference persistence
+- Statistics tracking per user
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Structure
+
+```
+jeda-web/
+├── app/                    # Next.js app directory
+│   ├── api/                # API routes
+│   ├── login/              # Login page
+│   └── page.tsx            # Main page
+├── components/             # React components
+│   ├── feature/            # Feature components
+│   ├── layout/             # Layout components
+│   └── ui/                 # UI primitives
+├── lib/                    # Utility functions and hooks
+│   ├── store/              # Zustand store for timer state
+│   ├── auth/               # Authentication logic
+│   └── utils/              # Utility functions
+├── db/                     # Database schema and queries
+├── public/                 # Static assets
+│   ├── sounds/             # Audio files
+│   └── images/             # Image assets
+└── README.md               # This file
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, issues, or feature requests, please open an issue on the GitHub repository.
