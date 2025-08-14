@@ -28,55 +28,55 @@ const AMBIENT_SOUNDS = [
     icon: "🌊",
     src: "/sounds/ambient/ocean.mp3",
   },
-  // Duplicates for demo
-  {
-    id: "rain-2",
-    name: "Light Rain",
-    icon: "☔",
-    src: "/sounds/ambient/rain.mp3",
-  },
-  {
-    id: "ocean-2",
-    name: "Ocean Waves",
-    icon: "🌊",
-    src: "/sounds/ambient/ocean.mp3",
-  },
-  {
-    id: "rain-3",
-    name: "Rain Storm",
-    icon: "⛈️",
-    src: "/sounds/ambient/rain.mp3",
-  },
-  {
-    id: "ocean-3",
-    name: "Deep Ocean",
-    icon: "🌊",
-    src: "/sounds/ambient/ocean.mp3",
-  },
-  {
-    id: "rain-4",
-    name: "Gentle Rain",
-    icon: "💧",
-    src: "/sounds/ambient/rain.mp3",
-  },
-  {
-    id: "ocean-4",
-    name: "Calm Ocean",
-    icon: "🌊",
-    src: "/sounds/ambient/ocean.mp3",
-  },
-  {
-    id: "rain-5",
-    name: "Rain Forest",
-    icon: "🌴",
-    src: "/sounds/ambient/rain.mp3",
-  },
-  {
-    id: "ocean-5",
-    name: "Beach Waves",
-    icon: "🏖️",
-    src: "/sounds/ambient/ocean.mp3",
-  },
+  // // Duplicates for demo
+  // {
+  //   id: "rain-2",
+  //   name: "Light Rain",
+  //   icon: "☔",
+  //   src: "/sounds/ambient/rain.mp3",
+  // },
+  // {
+  //   id: "ocean-2",
+  //   name: "Ocean Waves",
+  //   icon: "🌊",
+  //   src: "/sounds/ambient/ocean.mp3",
+  // },
+  // {
+  //   id: "rain-3",
+  //   name: "Rain Storm",
+  //   icon: "⛈️",
+  //   src: "/sounds/ambient/rain.mp3",
+  // },
+  // {
+  //   id: "ocean-3",
+  //   name: "Deep Ocean",
+  //   icon: "🌊",
+  //   src: "/sounds/ambient/ocean.mp3",
+  // },
+  // {
+  //   id: "rain-4",
+  //   name: "Gentle Rain",
+  //   icon: "💧",
+  //   src: "/sounds/ambient/rain.mp3",
+  // },
+  // {
+  //   id: "ocean-4",
+  //   name: "Calm Ocean",
+  //   icon: "🌊",
+  //   src: "/sounds/ambient/ocean.mp3",
+  // },
+  // {
+  //   id: "rain-5",
+  //   name: "Rain Forest",
+  //   icon: "🌴",
+  //   src: "/sounds/ambient/rain.mp3",
+  // },
+  // {
+  //   id: "ocean-5",
+  //   name: "Beach Waves",
+  //   icon: "🏖️",
+  //   src: "/sounds/ambient/ocean.mp3",
+  // },
 ];
 
 type SoundState = {
