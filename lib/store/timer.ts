@@ -53,7 +53,8 @@ export const defaultSettings: Settings = {
   backsound: "none",
   alarmRepeat: 1,
   backgroundType: "image",
-  backgroundImage: "/adv.png",
+  backgroundImage:
+    "https://res.cloudinary.com/dxurnpbrc/image/upload/v1755188916/6_si5cfa.png",
   enableNotifications: true,
 };
 

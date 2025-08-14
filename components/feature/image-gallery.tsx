@@ -2,26 +2,14 @@
 
 import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { PRESET_IMAGES } from "./data-image";
 
 interface ImageGalleryProps {
   selectedImage: string;
   onImageSelect: (image: string) => void;
 }
 
-const PRESET_IMAGES = [
-  { id: "mountain", name: "Mountain", url: "/adv.png" },
-  { id: "ocean", name: "Ocean", url: "/samurai1.jpg" },
-  { id: "forest", name: "Forest", url: "/kucing.png" },
-  { id: "desert", name: "Desert", url: "/adv.png" },
-  { id: "city", name: "City", url: "/adv.png" },
-  { id: "space", name: "Space", url: "/adv.png" },
-  { id: "mosuntain", name: "Mountain", url: "/adv.png" },
-  { id: "ocesan", name: "Ocean", url: "/samurai1.jpg" },
-  { id: "foresst", name: "Forest", url: "/adv.png" },
-  { id: "deserst", name: "Desert", url: "/adv.png" },
-  { id: "citay", name: "City", url: "/adv.png" },
-  { id: "spacse", name: "Space", url: "/adv.png" },
-];
+
 
 export function ImageGallery({ selectedImage, onImageSelect }: ImageGalleryProps) {
   return (
