@@ -57,6 +57,7 @@ export type SettingsData = {
   alarmRepeat: number;
   backgroundType: "color" | "image";
   backgroundImage: string;
+  enableNotifications: boolean;
 };
 
 export const DEFAULT_SETTINGS: SettingsData = {
@@ -75,6 +76,7 @@ export const DEFAULT_SETTINGS: SettingsData = {
   alarmRepeat: 1,
   backgroundType: "color",
   backgroundImage: "",
+  enableNotifications: true,
 };
 
 const ALARM_OPTIONS = [
@@ -235,6 +237,7 @@ export function SettingsDialog() {
         alarmRepeat: Number(form.alarmRepeat),
         backgroundType: form.backgroundType,
         backgroundImage: form.backgroundImage,
+        enableNotifications: form.enableNotifications,
       };
 
       // Update local store immediately
@@ -291,6 +294,7 @@ export function SettingsDialog() {
       alarmRepeat: Number(newSettings.alarmRepeat),
       backgroundType: newSettings.backgroundType,
       backgroundImage: newSettings.backgroundImage,
+      enableNotifications: newSettings.enableNotifications,
     });
 
     closeColorPicker();
@@ -426,6 +430,7 @@ export function SettingsDialog() {
                         alarmRepeat: Number(form.alarmRepeat),
                         backgroundType: newType,
                         backgroundImage: form.backgroundImage,
+                        enableNotifications: form.enableNotifications,
                       });
                     }}
                   >
@@ -468,6 +473,7 @@ export function SettingsDialog() {
                             alarmRepeat: Number(form.alarmRepeat),
                             backgroundType: form.backgroundType,
                             backgroundImage: image,
+                            enableNotifications: form.enableNotifications,
                           });
                         }}
                       />
@@ -713,6 +719,28 @@ export function SettingsDialog() {
             </div>
 
 
+            {/* Notification Settings Section */}
+            <div className="space-y-4">
+              <h3 className="text-base font-semibold">Notifications</h3>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="enableNotifications" className="text-sm">
+                    Enable Notifications
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Show browser notifications when sessions complete
+                  </p>
+                </div>
+                <Switch
+                  id="enableNotifications"
+                  checked={form.enableNotifications}
+                  onCheckedChange={(checked) =>
+                    handleSwitchChange("enableNotifications", checked)
+                  }
+                />
+              </div>
+            </div>
+
             <div className="flex justify-end w-full">
               <Button
                 size="sm"
@@ -799,6 +827,7 @@ export function SettingsDialog() {
             alarmRepeat: Number(form.alarmRepeat),
             backgroundType: form.backgroundType,
             backgroundImage: form.backgroundImage,
+            enableNotifications: form.enableNotifications,
           });
         }
       }}>
@@ -830,6 +859,7 @@ export function SettingsDialog() {
                   alarmRepeat: Number(form.alarmRepeat),
                   backgroundType: form.backgroundType,
                   backgroundImage: image,
+                  enableNotifications: form.enableNotifications,
                 });
               }}
             />

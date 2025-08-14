@@ -6,10 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTimerStore } from "@/lib/store/timer";
 import { toast } from "sonner";
-import { formatTime } from "@/lib/utils";
+import { cn, formatTime } from "@/lib/utils";
 import type { TimerMode } from "@/lib/store/timer";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import {
+  requestNotificationPermission,
+  showNotification,
+  getNotificationContent
+} from "@/lib/utils/notifications";
 
 export function PomodoroTimer() {
   const {
@@ -33,7 +38,6 @@ export function PomodoroTimer() {
   const alarmRef = useRef<HTMLAudioElement | null>(null);
   const alarmRepeatCountRef = useRef<number>(0);
 
-  const prevTimeLeft = useRef(timeLeft);
   const lastSaveTimeRef = useRef<number>(0);
   const SAVE_COOLDOWN = 2000; // 2 seconds cooldown between saves
 
@@ -51,6 +55,13 @@ export function PomodoroTimer() {
       loadUserSettings();
     }
   }, [session, loadUserSettings]);
+
+  // Request notification permission when timer starts
+  useEffect(() => {
+    if (isRunning && settings.enableNotifications) {
+      requestNotificationPermission();
+    }
+  }, [isRunning, settings.enableNotifications]);
 
   // Get background color based on current mode
   const getBackgroundColor = () => {
@@ -162,17 +173,6 @@ export function PomodoroTimer() {
     };
   }, [mode, isRunning, settings.backsound, settings.volume]);
 
-  // Play alarm when timer ends
-  useEffect(() => {
-    if (
-      prevTimeLeft.current > 0 &&
-      timeLeft === 0 &&
-      (mode === "pomodoro" || mode === "shortBreak" || mode === "longBreak")
-    ) {
-      playAlarm();
-    }
-    prevTimeLeft.current = timeLeft;
-  }, [timeLeft, mode, playAlarm]);
 
   // Cleanup alarm on unmount
   useEffect(() => {
@@ -277,6 +277,15 @@ export function PomodoroTimer() {
     const handleTimerEnd = async () => {
       useTimerStore.setState({ isRunning: false });
 
+      // Show notification if enabled
+      if (settings.enableNotifications) {
+        const notificationContent = getNotificationContent(mode);
+        showNotification(notificationContent.title, {
+          body: notificationContent.body,
+          icon: "/icon.svg",
+        });
+      }
+
       let nextModeDetermined: TimerMode | null = null;
 
       // Determine next mode when pomodoro ends
@@ -306,6 +315,9 @@ export function PomodoroTimer() {
           useTimerStore.setState({ isRunning: true });
         }
       }
+
+      // Play alarm sound after showing notification
+      playAlarm();
     };
 
     if (isRunning && timeLeft > 0) {
@@ -327,6 +339,7 @@ export function PomodoroTimer() {
     setMode,
     incrementCompletedPomodoros,
     setTimeLeft,
+    playAlarm,
   ]);
 
   // Separate effect for tracking focus time
@@ -452,18 +465,35 @@ export function PomodoroTimer() {
           <TabsList className="grid grid-cols-3 w-fit mx-auto bg-transparent  ">
             <TabsTrigger
               value="pomodoro"
-              className=" border-0 font-fredoka   font-medium"
+              className={cn(
+                "border-0 font-fredoka font-medium",
+                settings.backgroundType === "image"
+                  ? "dark:data-[state=active]:bg-background/50"
+                  : "dark:data-[state=active]:bg-background/15"
+              )}
             >
               Pomodoros
             </TabsTrigger>
+
             <TabsTrigger
               value="shortBreak"
-              className=" border-0 font-fredoka  font-medium"
+              className={cn(
+                "border-0 font-fredoka font-medium",
+                settings.backgroundType === "image"
+                  ? "dark:data-[state=active]:bg-background/50"
+                  : "dark:data-[state=active]:bg-background/15"
+              )}
             >
               Short Break
             </TabsTrigger>
             <TabsTrigger value="longBreak"
-              className=" border-0  font-medium">
+              className={cn(
+                "border-0 font-fredoka font-medium",
+                settings.backgroundType === "image"
+                  ? "dark:data-[state=active]:bg-background/50"
+                  : "dark:data-[state=active]:bg-background/15"
+              )}
+            >
               Long Break
             </TabsTrigger>
           </TabsList>
@@ -523,6 +553,6 @@ export function PomodoroTimer() {
         </div>
       </div>
       {/* <p className="text-primary pt-20 pb-10"><strong>Jeda</strong> by <a href="example.com">Any Peace</a></p> */}
-    </div>
+    </div >
   );
 }

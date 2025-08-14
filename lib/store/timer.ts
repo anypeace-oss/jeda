@@ -35,6 +35,7 @@ export type Settings = {
   alarmRepeat: number;
   backgroundType: "color" | "image";
   backgroundImage: string;
+  enableNotifications: boolean;
 };
 
 export const defaultSettings: Settings = {
@@ -53,6 +54,7 @@ export const defaultSettings: Settings = {
   alarmRepeat: 1,
   backgroundType: "image",
   backgroundImage: "/adv.png",
+  enableNotifications: true,
 };
 
 export const useTimerStore = create<TimerState>()(

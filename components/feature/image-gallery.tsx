@@ -11,7 +11,7 @@ interface ImageGalleryProps {
 const PRESET_IMAGES = [
   { id: "mountain", name: "Mountain", url: "/adv.png" },
   { id: "ocean", name: "Ocean", url: "/samurai1.jpg" },
-  { id: "forest", name: "Forest", url: "/adv.png" },
+  { id: "forest", name: "Forest", url: "/kucing.png" },
   { id: "desert", name: "Desert", url: "/adv.png" },
   { id: "city", name: "City", url: "/adv.png" },
   { id: "space", name: "Space", url: "/adv.png" },
@@ -33,11 +33,10 @@ export function ImageGallery({ selectedImage, onImageSelect }: ImageGalleryProps
           {PRESET_IMAGES.map((image) => (
             <div key={image.id} className="relative">
               <button
-                className={`relative h-24 w-32 rounded-md overflow-hidden border-2 ${
-                  selectedImage === image.url
-                    ? "border-primary ring-2 ring-primary/30"
-                    : "border-transparent"
-                }`}
+                className={`relative h-24 w-32 rounded-md overflow-hidden border-2 ${selectedImage === image.url
+                  ? "border-primary ring-2 ring-primary/30"
+                  : "border-transparent"
+                  }`}
                 onClick={() => onImageSelect(image.url)}
               >
                 <Image
