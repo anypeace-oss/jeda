@@ -473,7 +473,7 @@ export function PomodoroTimer() {
         </Tabs>
 
         <div className="text-center mb-8">
-          <span className="text-[150px] sm:text-[170px] md:text-[180px] lg:text-[190px] font-fredoka font-semibold text-primary">
+          <span className="text-[120px] sm:text-[150px] md:text-[170px] lg:text-[190px] font-fredoka font-semibold text-primary">
             {formatTime(timeLeft)}
           </span>
 

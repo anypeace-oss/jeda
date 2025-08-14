@@ -42,8 +42,8 @@ export default function Home() {
         <Header />
         <PomodoroTimer />
       </div>
-      <Expalin />
-      <Footer />
+      {/* <Expalin /> */}
+      {/* <Footer /> */}
     </div>
   );
 }
