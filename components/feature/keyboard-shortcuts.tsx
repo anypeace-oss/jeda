@@ -16,6 +16,7 @@ const SHORTCUTS = [
   { key: "R", action: "Open/Close Stats" },
   { key: "S", action: "Open/Close Settings" },
   { key: "K", action: "Open/Close  Keyboard Shortcuts" },
+  { key: "A", action: "Open/Close  Ambient Sounds" },
 ];
 
 type KeyboardShortcutsProps = {

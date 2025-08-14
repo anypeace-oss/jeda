@@ -51,7 +51,7 @@ export const defaultSettings: Settings = {
   alarmSound: "alarm-bell.mp3",
   backsound: "none",
   alarmRepeat: 1,
-  backgroundType: "color",
+  backgroundType: "image",
   backgroundImage: "/adv.png",
 };
 

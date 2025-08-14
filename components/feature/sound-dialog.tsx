@@ -328,7 +328,7 @@ export default function SoundDialog() {
       </Tooltip>
       <DialogContent>
         <DialogHeader className="flex flex-row items-center ">
-          <DialogTitle className="text-xl font-medium">Sounds</DialogTitle>
+          <DialogTitle className="text-xl font-medium">Ambient</DialogTitle>
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"

@@ -40,7 +40,7 @@
   --font-serif: var(--font-fredoka);
   --font-mono: var(--font-fredoka);
   --font-fredoka: var(--font-fredoka);
-  --radius: 0.5rem;
+  --radius: 1.5rem;
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
   --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
   --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18),
@@ -95,7 +95,7 @@
   --font-serif: var(--font-fredoka);
   --font-mono: var(--font-fredoka);
   --font-fredoka: var(--font-fredoka);
-  --radius: 1rem;
+  --radius: 1.5rem;
   --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
   --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.09);
   --shadow-sm: 0px 1px 2px 0px hsl(0 0% 0% / 0.18),

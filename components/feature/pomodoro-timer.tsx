@@ -437,7 +437,7 @@ export function PomodoroTimer() {
 
   return (
     <div
-      className="relative flex flex-col items-center pb-50  shadow-2xl"
+      className="relative flex flex-col items-center "
     // style={{ backgroundColor }}
     >
       {/* Hidden audio element for backsound */}
@@ -449,10 +449,10 @@ export function PomodoroTimer() {
           onValueChange={(value) => setMode(value as TimerMode)}
           className="mb-6"
         >
-          <TabsList className="grid grid-cols-3 w-fit mx-auto bg-transparent   ">
+          <TabsList className="grid grid-cols-3 w-fit mx-auto bg-foreground/20">
             <TabsTrigger
               value="pomodoro"
-              className="  border-0 font-fredoka   font-medium"
+              className=" border-0 font-fredoka   font-medium"
             >
               Pomodoros
             </TabsTrigger>

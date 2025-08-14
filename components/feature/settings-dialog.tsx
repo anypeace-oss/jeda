@@ -370,7 +370,7 @@ export function SettingsDialog() {
       <Tooltip delayDuration={0}>
         <TooltipTrigger asChild>
           <DialogTrigger asChild>
-            <Button variant="outline" >
+            <Button variant="outline" size={"icon"} >
               <Settings className="h-5 w-5" />
             </Button>
           </DialogTrigger>

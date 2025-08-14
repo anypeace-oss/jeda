@@ -15,18 +15,18 @@ import { authClient } from "@/lib/auth-client";
 import { Loader } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useTimerBackground } from "@/lib/hooks/use-timer-background";
 import Link from "next/link";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useBackground } from "@/lib/hooks/use-background";
 export default function SignInPage() {
   const [githubLoading, setGithubLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [discordLoading, setDiscordLoading] = useState(false);
-  const backgroundColor = useTimerBackground();
+  const background = useBackground();
 
   const handleDiscordSignIn = async () => {
     setDiscordLoading(true);
@@ -63,10 +63,28 @@ export default function SignInPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative dark"
-      style={{ backgroundColor }}
+      className="min-h-screen flex items-center justify-center dark relative"
+      style={{
+        backgroundColor:
+          background.type === "color" ? background.value : "transparent",
+      }}
     >
-      <div className="max-w-sm w-full space-y-8">
+      {/* Background image */}
+      {background.type === "image" && (
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={background.value}
+            alt="Background"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Optional overlay agar konten lebih terbaca */}
+          <div className="absolute inset-0 bg-black/30"></div>
+        </div>
+      )}
+
+      <div className="max-w-sm w-full space-y-8 px-5 relative z-10">
         <div>
           <h2 className="mt-6 text-center text-4xl font-medium dark:text-foreground flex items-center justify-center gap-2">
             Welcome{" "}
@@ -79,8 +97,8 @@ export default function SignInPage() {
             New here or coming back? Choose how you want to continue
           </p>
         </div>
-
         <div className="space-y-4">
+
           <Button
             variant="default"
             onClick={handleGoogleSignIn}
@@ -88,7 +106,11 @@ export default function SignInPage() {
             disabled={githubLoading || googleLoading || discordLoading}
           >
             {googleLoading ? (
-              <Loader className="w-4 h-4 animate-spin" />
+
+              <div className="flex items-center gap-2">
+                <Loader className="w-4 h-4 animate-spin" />
+                Continue with Google
+              </div>
             ) : (
               <>
                 <div className="flex items-center gap-2">
@@ -131,7 +153,12 @@ export default function SignInPage() {
             disabled={githubLoading || googleLoading || discordLoading}
           >
             {githubLoading ? (
-              <Loader className="w-4 h-4 animate-spin" />
+              <div className="flex items-center gap-2">
+                <Loader className="w-4 h-4 animate-spin" />
+                Continue with GitHub
+              </div>
+
+
             ) : (
               <>
                 <div className="flex items-center gap-2">
@@ -161,7 +188,11 @@ export default function SignInPage() {
             disabled={discordLoading || googleLoading || githubLoading}
           >
             {discordLoading ? (
-              <Loader className="w-4 h-4 animate-spin" />
+              <div className="flex items-center gap-2">
+                <Loader className="w-4 h-4 animate-spin" />
+                Continue with Discord
+              </div>
+
             ) : (
               <>
                 <div className="flex items-center gap-2">
@@ -246,7 +277,7 @@ export default function SignInPage() {
           </p>
         </div>
 
-        <p className="text-xs  text-center  absolute bottom-10 left-0 right-0 font-mono dark:text-foreground">
+        <p className="text-xs  text-center  absolute  left-0 right-0 font-mono dark:text-foreground">
           By signing in you agree to our{" "}
           <a href="/terms" className="underline">
             Terms of service
@@ -257,6 +288,8 @@ export default function SignInPage() {
           </a>
         </p>
       </div>
+
     </div>
+
   );
 }

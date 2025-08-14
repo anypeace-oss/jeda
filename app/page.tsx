@@ -3,8 +3,8 @@ import { PomodoroTimer } from "@/components/feature/pomodoro-timer";
 import { useBackground } from "@/lib/hooks/use-background";
 
 import Header from "@/components/layout/header";
-import Expalin from "@/components/layout/expalin";
-import Footer from "@/components/layout/footer";
+// import Expalin from "@/components/layout/expalin";
+// import Footer from "@/components/layout/footer";
 import Image from "next/image";
 
 export default function Home() {
